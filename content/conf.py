@@ -39,6 +39,8 @@ exclude_patterns = ['.build', "*.gen.rst"]
 # "<project> v<release> documentation".
 html_title = "Glasgow Haskell Compiler <release> Users Guide"
 html_short_title = "GHC %s Users Guide" % release
+html_theme_path = ['.']
+html_theme = 'ghc-theme'
 html_logo = None
 html_static_path = ['images']
 # Convert quotes and dashes to typographically correct entities
