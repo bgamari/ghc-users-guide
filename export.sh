@@ -8,5 +8,6 @@ fi
 rm -f content/*
 cp $GHC_TREE/docs/users_guide/*.rst content
 cp $GHC_TREE/docs/users_guide/ghc_config.py .
-git add content ghc_config.py
+cp -R $GHC_TREE/docs/users_guide/images .
+git add content ghc_config.py images
 git commit -m "update" -a
