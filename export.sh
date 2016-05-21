@@ -13,7 +13,7 @@ cp -R $GHC_TREE/docs/users_guide/images .
 
 # Use default readthedocs theme
 #cp -R $GHC_TREE/docs/users_guide/ghc-theme content
-echo "html_theme = None" >> content/conf.py
+echo "html_theme = 'sphinx_rtd_theme'" >> content/conf.py
 
 git add content ghc_config.py images
 git commit -m "update" -a
