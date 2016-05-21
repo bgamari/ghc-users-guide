@@ -7,12 +7,12 @@ Welcome to the GHC Users Guide
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :numbered:
 
    license
    intro
-   7.12.1-notes
+   8.0.1-notes
    ghci
    runghc
    usage
@@ -22,6 +22,7 @@ Contents:
    ffi-chap
    extending_ghc
    gone_wrong
+   debug-info
    utils
    win32-dlls
    bugs

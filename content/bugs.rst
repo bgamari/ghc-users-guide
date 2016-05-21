@@ -26,9 +26,9 @@ Divergence from Haskell 98 and Haskell 2010
 
 By default, GHC mainly aims to behave (mostly) like a Haskell 2010
 compiler, although you can tell it to try to behave like a particular
-version of the language with the ``-XHaskell98`` and ``-XHaskell2010``
-flags. The known deviations from the standards are described below.
-Unless otherwise stated, the deviation applies in Haskell 98,
+version of the language with the :ghc-flag:`-XHaskell98` and
+:ghc-flag:`-XHaskell2010` flags. The known deviations from the standards are
+described below. Unless otherwise stated, the deviation applies in Haskell 98,
 Haskell 2010 and the default modes.
 
 .. _infelicities-lexical:
@@ -54,9 +54,7 @@ Context-free syntax
    relaxed to allow the nested context to be at the same level as the
    enclosing context, if the enclosing context is a ``do`` expression.
 
-   For example, the following code is accepted by GHC:
-
-   ::
+   For example, the following code is accepted by GHC: ::
 
        main = do args <- getArgs
                  if null args then return [] else do
@@ -69,15 +67,11 @@ Context-free syntax
 -  GHC doesn't do the fixity resolution in expressions during parsing as
    required by Haskell 98 (but not by Haskell 2010). For example,
    according to the Haskell 98 report, the following expression is
-   legal:
-
-   ::
+   legal: ::
 
            let x = 42 in x == 42 == True
 
-   and parses as:
-
-   ::
+   and parses as: ::
 
            (let x = 42 in x == 42) == True
 
@@ -85,11 +79,10 @@ Context-free syntax
    far to the right as possible”. Since it can't extend past the second
    equals sign without causing a parse error (``==`` is non-fix), the
    ``let``\-expression must terminate there. GHC simply gobbles up the
-   whole expression, parsing like this:
-
-   ::
+   whole expression, parsing like this: ::
 
            (let x = 42 in x == 42 == True)
+
 -  The Haskell Report allows you to put a unary ``-`` preceding certain
    expressions headed by keywords, allowing constructs like ``- case x of ...``
    or ``- do { ... }``. GHC does not allow this. Instead, unary ``-`` is allowed
@@ -102,9 +95,7 @@ Expressions and patterns
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 In its default mode, GHC makes some programs slightly more defined than
-they should be. For example, consider
-
-::
+they should be. For example, consider ::
 
     f :: [a] -> b -> b
     f [] = error "urk"
@@ -188,9 +179,7 @@ Numbers, basic types, and built-in classes
         in ``Bits`` instances.
 
 Extra instances
-    The following extra instances are defined:
-
-    ::
+    The following extra instances are defined: ::
 
         instance Functor ((->) r)
         instance Monad ((->) r)
@@ -199,9 +188,7 @@ Extra instances
         instance Monad (Either e)
 
 Multiply-defined array elements not checked
-    This code fragment should elicit a fatal error, but it does not:
-
-    ::
+    This code fragment should elicit a fatal error, but it does not: ::
 
         main = print (array (1,1) [(1,2), (1,3)])
 
@@ -223,31 +210,38 @@ Arbitrary-sized tuples
     stuck on it.
 
 ``splitAt`` semantics
-    ``Data.List.splitAt`` is stricter than specified in the Report.
-    Specifically, the Report specifies that
-
-    ..
+    ``Data.List.splitAt`` is more strict than specified in the Report.
+    Specifically, the Report specifies that ::
 
        splitAt n xs = (take n xs, drop n xs)
 
-    which implies that
-
-    ..
+    which implies that ::
 
        splitAt undefined undefined = (undefined, undefined)
 
-    but GHC's implementation is strict in its first argument, so
+    but GHC's implementation is strict in its first argument, so ::
 
-    ..
+       splitAt undefined [] = undefined
 
-        splitAt undefined [] = undefined
+``Show``\ ing records
+    The Haskell 2010 definition of ``Show`` stipulates that the rendered
+    string should only include parentheses which are necessary to unambiguously
+    parse the result. For historical reasons, ``Show`` instances derived by GHC
+    include parentheses around records despite the fact that record syntax
+    binds more tightly than function application; e.g., ::
+
+        data Hello = Hello { aField :: Int } deriving (Show)
+
+        -- GHC produces...
+        show (Just (Hello {aField=42})) == "Just (Hello {aField=42})"
+
+        -- whereas Haskell 2010 calls for...
+        show (Just (Hello {aField=42})) == "Just Hello {aField=42}"
 
 ``Read``\ ing integers
     GHC's implementation of the ``Read`` class for integral types
     accepts hexadecimal and octal literals (the code in the Haskell 98
-    report doesn't). So, for example,
-
-    ::
+    report doesn't). So, for example, ::
 
         read "0xf00" :: Int
 
@@ -258,9 +252,7 @@ Arbitrary-sized tuples
     too.
 
 ``isAlpha``
-    The Haskell 98 definition of ``isAlpha`` is:
-
-    ::
+    The Haskell 98 definition of ``isAlpha`` is: ::
 
         isAlpha c = isUpper c || isLower c
 
@@ -372,18 +364,14 @@ Bugs in GHC
 -  GHC's runtime system implements cooperative multitasking, with
    context switching potentially occurring only when a program
    allocates. This means that programs that do not allocate may never
-   context switch. See :ghc-ticket:`367` for further discussion.
+   context switch. This is especially true of programs using STM, which
+   may deadlock after observing inconsistent state. See :ghc-ticket:`367`
+   for further discussion.
 
    If you are hit by this, you may want to compile the affected module
-   with ``-fno-omit-yields``. This flag ensures that yield points are
-   inserted at every function entrypoint (at the expense of a bit of
-   performance).
-
--  GHC can warn about non-exhaustive or overlapping patterns (see
-   :ref:`options-sanity`), and usually does so correctly. But not
-   always. It gets confused by string patterns, and by guards, and can
-   then emit bogus warnings. The entire overlap-check code needs an
-   overhaul really.
+   with :ghc-flag:`-fno-omit-yields <-fomit-yields>` (see :ref:`options-f`).
+   This flag ensures that yield points are inserted at every function entrypoint
+   (at the expense of a bit of performance).
 
 -  GHC does not allow you to have a data type with a context that
    mentions type variables that are not data type parameters. For
@@ -420,7 +408,7 @@ Bugs in GHC
 
    The non-termination is reported like this:
 
-   ::
+   .. code-block:: none
 
        ghc: panic! (the 'impossible' happened)
          (GHC version 7.10.1 for x86_64-unknown-linux):
@@ -429,7 +417,7 @@ Bugs in GHC
          To increase the limit, use -fsimpl-tick-factor=N (default 100)
 
    with the panic being reported no matter how high a
-   ``-fsimpl-tick-factor`` you supply.
+   :ghc-flag:`-fsimpl-tick-factor` you supply.
 
    We have never found another class of programs, other than this
    contrived one, that makes GHC diverge, and fixing the problem would
@@ -438,7 +426,7 @@ Bugs in GHC
    inliner <http://research.microsoft.com/~simonpj/Papers/inlining/>`__.
 
 -  On 32-bit x86 platforms when using the native code generator, the
-   ``-fexcess-precision``\ ``-fexcess-precision`` option is always on.
+   :ghc-flag:`-fexcess-precision` option is always on.
    This means that floating-point calculations are non-deterministic,
    because depending on how the program is compiled (optimisation
    settings, for example), certain calculations might be done at 80-bit
@@ -451,8 +439,8 @@ Bugs in GHC
    .. index::
       single: -msse2 option
 
-   One workaround is to use the ``-msse2`` option (see
-   :ref:`options-platform`, which generates code to use the SSE2
+   One workaround is to use the :ghc-flag:`-msse2` option (see
+   :ref:`options-platform`), which generates code to use the SSE2
    instruction set instead of the x87 instruction set. SSE2 code uses
    the correct precision for all floating-point operations, and so gives
    deterministic results. However, note that this only works with
@@ -460,6 +448,48 @@ Bugs in GHC
    later), which is why the option is not enabled by default. The
    libraries that come with GHC are probably built without this option,
    unless you built GHC yourself.
+
+-  The :ghc-flag:`state hack <-fstate-hack>` optimization can result in
+   non-obvious changes in evaluation ordering which may hide exceptions, even
+   with :ghc-flag:`-fpedantic-bottoms` (see, e.g., :ghc-ticket:`7411`). For
+   instance, ::
+
+     import Control.Exception
+     import Control.DeepSeq
+     main = do
+         evaluate (('a' : undefined) `deepseq` return () :: IO ())
+         putStrLn "Hello"
+
+   Compiling this program with ``-O`` results in ``Hello`` to be printed,
+   despite the fact that ``evaluate`` should have bottomed. Compiling
+   with ``-O -fno-state-hack`` results in the exception one would expect.
+
+-  Programs compiled with :ghc-flag:`-fdefer-type-errors` may fail a bit
+   more eagerly than one might expect. For instance, ::
+
+     {-# OPTIONS_GHC -fdefer-type-errors #-}
+     main = do
+       putStrLn "Hi there."
+       putStrLn True
+
+   Will emit no output, despite the fact that the ill-typed term appears
+   after the well-typed ``putStrLn "Hi there."``. See :ghc-ticket:`11197`.
+
+-  Despite appearances ``*`` and ``Constraint`` aren't really distinct kinds
+   in the compiler's internal representation and can be unified producing
+   unexpected results. See :ghc-ticket:`11715` for one example.
+
+-  :ghc-flag:`-XTypeInType` still has a few rough edges, especially where
+   it interacts with other advanced type-system features. For instance,
+   this definition causes the typechecker to loop (:ghc-ticket:`11559`), ::
+
+     data A :: Type where
+       B :: forall (a :: A). A
+
+-  There is known to be maleficent interactions between weak references and
+   laziness. Particularly, it has been observed that placing a thunk containing
+   a reference to a weak reference inside of another weak reference may cause
+   runtime crashes. See :ghc-ticket:`11108` for details.
 
 .. _bugs-ghci:
 
@@ -479,7 +509,7 @@ Bugs in GHCi (the interactive GHC)
    files that have more than 0xffff relocations. When GHCi tries to load
    a package affected by this bug, you get an error message of the form
 
-   ::
+   .. code-block:: none
 
        Loading package javavm ... linking ... WARNING: Overflown relocation field (# relocs found: 30765)
 

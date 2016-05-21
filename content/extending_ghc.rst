@@ -58,7 +58,7 @@ A number of restrictions apply to use of annotations:
 -  The expression you are annotating with must have a type with
    ``Typeable`` and ``Data`` instances
 
--  The `Template Haskell staging restrictions <>`__ apply to the
+-  The :ref:`Template Haskell staging restrictions <th-usage>` apply to the
    expression being annotated with, so for example you cannot run a
    function from the module being compiled.
 
@@ -149,7 +149,7 @@ which provides this for us.
 
 Compiling it results in:
 
-::
+.. code-block:: none
 
     $ cat test_main.hs
     main = putStrLn "hi"
@@ -190,17 +190,25 @@ restrictions are too onerous,
 Using compiler plugins
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Plugins can be specified on the command line with the option
-``-fplugin=module`` where ⟨module⟩ is a module in a registered package
+Plugins can be specified on the command line with the :ghc-flag:`-fplugin`
+option. ``-fplugin=module`` where ⟨module⟩ is a module in a registered package
 that exports a plugin. Arguments can be given to plugins with the
-command line option ``-fplugin-opt=module:args``, where ⟨args⟩ are
-arguments interpreted by the plugin provided by ⟨module⟩.
+:ghc-flag:`-fplugin-opt` option.
+
+.. ghc-flag:: -fplugin=<module>
+
+    Load the plugin in the given module. The module must be a member of a package
+    registered in GHC's package database.
+
+.. ghc-flag:: -fplugin-opt=<module>:<args>
+
+    Pass arguments ⟨args⟩ to the given plugin.
 
 As an example, in order to load the plugin exported by ``Foo.Plugin`` in
 the package ``foo-ghc-plugin``, and give it the parameter "baz", we
 would invoke GHC like this:
 
-::
+.. code-block:: none
 
     $ ghc -fplugin Foo.Plugin -fplugin-opt Foo.Plugin:baz Test.hs
     [1 of 1] Compiling Main             ( Test.hs, Test.o )
@@ -213,9 +221,48 @@ would invoke GHC like this:
     Linking Test ...
     $
 
-Since plugins are exported by registered packages, it's safe to put
-dependencies on them in cabal for example, and specify plugin arguments
-to GHC through the ``ghc-options`` field.
+Plugin modules live in a separate namespace from
+the user import namespace.  By default, these two namespaces are
+the same; however, there are a few command line options which
+control specifically plugin packages:
+
+.. ghc-flag:: -plugin-package ⟨pkg⟩
+
+    This option causes the installed package ⟨pkg⟩ to be exposed
+    for plugins, such as :ghc-flag:`-fplugin`. The
+    package ⟨pkg⟩ can be specified in full with its version number (e.g.
+    ``network-1.0``) or the version number can be omitted if there is
+    only one version of the package installed. If there are multiple
+    versions of ⟨pkg⟩ installed and :ghc-flag:`-hide-all-plugin-packages` was not
+    specified, then all other versions will become hidden.  :ghc-flag:`-plugin-package`
+    supports thinning and renaming described in
+    :ref:`package-thinning-and-renaming`.
+
+    Unlike :ghc-flag:`-package`, this option does NOT cause package ⟨pkg⟩ to be linked
+    into the resulting executable or shared object.
+
+.. ghc-flag:: -plugin-package-id ⟨pkg-id⟩
+
+    Exposes a package in the plugin namespace like :ghc-flag:`-plugin-package`, but the
+    package is named by its installed package ID rather than by name. This is a
+    more robust way to name packages, and can be used to select packages that
+    would otherwise be shadowed. Cabal passes :ghc-flag:`-plugin-package-id` flags to
+    GHC.  :ghc-flag:`-plugin-package-id` supports thinning and renaming described in
+    :ref:`package-thinning-and-renaming`.
+
+.. ghc-flag:: -hide-all-plugin-packages
+
+    By default, all exposed packages in the normal, source import
+    namespace are also available for plugins.  This causes those
+    packages to be hidden by default.
+    If you use this flag, then any packages with plugins you require
+    need to be explicitly exposed using
+    :ghc-flag:`-plugin-package` options.
+
+To declare a dependency on a plugin, add it to the ``ghc-plugins`` field
+in Cabal.  You should only put a plugin in ``build-depends`` if you
+require compatibility with older versions of Cabal, or also have a source
+import on the plugin in question.
 
 .. _writing-compiler-plugins:
 
@@ -533,3 +580,53 @@ typechecking, and can be checked by ``-dcore-lint``. It is possible for
 the plugin to create equality axioms for use in evidence terms, but GHC
 does not check their consistency, and inconsistent axiom sets may lead
 to segfaults or other runtime misbehaviour.
+
+.. _frontend_plugins:
+
+Frontend plugins
+~~~~~~~~~~~~~~~~
+
+A frontend plugin allows you to add new major modes to GHC.  You may prefer
+this over a traditional program which calls the GHC API, as GHC manages a lot
+of parsing flags and administrative nonsense which can be difficult to
+manage manually.  To load a frontend plugin exported by ``Foo.FrontendPlugin``,
+we just invoke GHC with the :ghc-flag:`--frontend` flag as follows:
+
+.. code-block:: none
+
+    $ ghc --frontend Foo.FrontendPlugin ...other options...
+
+Frontend plugins, like compiler plugins, are exported by registered plugins.
+However, unlike compiler modules, frontend plugins are modules that export
+at least a single identifier ``frontendPlugin`` of type
+``GhcPlugins.FrontendPlugin``.
+
+``FrontendPlugin`` exports a field ``frontend``, which is a function
+``[String] -> [(String, Maybe Phase)] -> Ghc ()``.  The first argument
+is a list of extra flags passed to the frontend with ``-ffrontend-opt``;
+the second argument is the list of arguments, usually source files
+and module names to be compiled (the ``Phase`` indicates if an ``-x``
+flag was set), and a frontend simply executes some operation in the
+``Ghc`` monad (which, among other things, has a ``Session``).
+
+As a quick example, here is a frontend plugin that prints the arguments that
+were passed to it, and then exits.
+
+::
+
+    module DoNothing.FrontendPlugin (frontendPlugin) where
+    import GhcPlugins
+
+    frontendPlugin :: FrontendPlugin
+    frontendPlugin = defaultFrontendPlugin {
+      frontend = doNothing
+      }
+
+    doNothing :: [String] -> [(String, Maybe Phase)] -> Ghc ()
+    doNothing flags args = do
+        liftIO $ print flags
+        liftIO $ print args
+
+Provided you have compiled this plugin and registered it in a package,
+you can just use it by specifying ``--frontend DoNothing.FrontendPlugin``
+on the command line to GHC.
