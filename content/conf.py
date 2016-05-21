@@ -182,3 +182,4 @@ def increase_python_stack():
     #
     # Default python allows recursion depth of 1000 calls.
     sys.setrecursionlimit(10000)
+html_theme = None

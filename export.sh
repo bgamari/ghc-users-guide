@@ -5,11 +5,15 @@ if [ -z "$GHC_TREE" ]; then
         exit 1
 fi
 
-rm -f content/*
+rm -Rf content/*
 mkdir -p content
-cp -R $GHC_TREE/docs/users_guide/ghc-theme content
 cp $GHC_TREE/docs/users_guide/*.{rst,py} content
 cp $GHC_TREE/docs/users_guide/ghc_config.py .
 cp -R $GHC_TREE/docs/users_guide/images .
+
+# Use default readthedocs theme
+#cp -R $GHC_TREE/docs/users_guide/ghc-theme content
+echo "html_theme = None" >> content/conf.py
+
 git add content ghc_config.py images
 git commit -m "update" -a
