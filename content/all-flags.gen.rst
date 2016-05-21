@@ -13,7 +13,7 @@ C pre-processor
 
 
 Finding imports
-    ``-i ⟨dir1⟩:⟨dir2⟩:...`` ``-i``
+    ``-i⟨dir1⟩:⟨dir2⟩:...`` ``-i``
 
 
 Interactive mode
@@ -25,11 +25,11 @@ Interface files
 
 
 Keeping intermediate files
-    ``-keep-hc-file, -keep-hc-files`` ``-keep-llvm-file, -keep-llvm-files`` ``-keep-s-file, -keep-s-files`` ``-keep-tmp-files``
+    ``-keep-hc-file, -keep-hc-files`` ``-keep-hi-files`` ``-keep-llvm-file, -keep-llvm-files`` ``-keep-o-files`` ``-keep-s-file, -keep-s-files`` ``-keep-tmp-files``
 
 
 Language options
-    ``-fconstraint-solver-iterations=⟨n⟩`` ``-freduction-depth=⟨n⟩`` ``-fcontext-stack=⟨n⟩`` ``-fglasgow-exts`` ``-firrefutable-tuples`` ``-fpackage-trust`` ``-ftype-function-depth=⟨n⟩`` ``-XAllowAmbiguousTypes`` ``-XArrows`` ``-XApplicativeDo`` ``-XAutoDeriveTypeable`` ``-XBangPatterns`` ``-XBinaryLiterals`` ``-XCApiFFI`` ``-XConstrainedClassMethods`` ``-XConstraintKinds`` ``-XCPP`` ``-XDataKinds`` ``-XDefaultSignatures`` ``-XDeriveAnyClass`` ``-XDeriveDataTypeable`` ``-XDeriveFunctor`` ``-XDeriveFoldable`` ``-XDeriveGeneric`` ``-XDeriveGeneric`` ``-XDeriveLift`` ``-XDeriveTraversable`` ``-XDisambiguateRecordFields`` ``-XEmptyCase`` ``-XEmptyDataDecls`` ``-XExistentialQuantification`` ``-XExplicitForAll`` ``-XExplicitNamespaces`` ``-XExtendedDefaultRules`` ``-XFlexibleContexts`` ``-XFlexibleInstances`` ``-XForeignFunctionInterface`` ``-XFunctionalDependencies`` ``-XGADTs`` ``-XGADTSyntax`` ``-XGeneralizedNewtypeDeriving`` ``-XGenerics`` ``-XImplicitParams`` ``-XNoImplicitPrelude`` ``-XImpredicativeTypes`` ``-XIncoherentInstances`` ``-XTypeFamilyDependencies`` ``-XInstanceSigs`` ``-XInterruptibleFFI`` ``-XKindSignatures`` ``-XLambdaCase`` ``-XLiberalTypeSynonyms`` ``-XMagicHash`` ``-XMonadComprehensions`` ``-XMonoLocalBinds`` ``-XNoMonomorphismRestriction`` ``-XMultiParamTypeClasses`` ``-XMultiWayIf`` ``-XNamedFieldPuns`` ``-XNamedWildCards`` ``-XNegativeLiterals`` ``-XNoNPlusKPatterns`` ``-XNullaryTypeClasses`` ``-XNumDecimals`` ``-XOverlappingInstances`` ``-XOverloadedLists`` ``-XOverloadedStrings`` ``-XPackageImports`` ``-XParallelArrays`` ``-XParallelListComp`` ``-XPartialTypeSignatures`` ``-XPatternGuards`` ``-XPatternSynonyms`` ``-XPolyKinds`` ``-XPolymorphicComponents`` ``-XPostfixOperators`` ``-XQuasiQuotes`` ``-XRank2Types`` ``-XRankNTypes`` ``-XRebindableSyntax`` ``-XRecordWildCards`` ``-XRecursiveDo`` ``-XRelaxedPolyRec`` ``-XRoleAnnotations`` ``-XSafe`` ``-XScopedTypeVariables`` ``-XStandaloneDeriving`` ``-XStrictData`` ``-XTemplateHaskell`` ``-XTemplateHaskellQuotes`` ``-XNoTraditionalRecordSyntax`` ``-XTransformListComp`` ``-XTrustworthy`` ``-XTupleSections`` ``-XTypeFamilies`` ``-XTypeOperators`` ``-XTypeSynonymInstances`` ``-XUnboxedTuples`` ``-XUndecidableInstances`` ``-XUnicodeSyntax`` ``-XUnliftedFFITypes`` ``-XUnsafe`` ``-XViewPatterns``
+    ``-fconstraint-solver-iterations=⟨n⟩`` ``-freduction-depth=⟨n⟩`` ``-fcontext-stack=⟨n⟩`` ``-fglasgow-exts`` ``-firrefutable-tuples`` ``-fpackage-trust`` ``-ftype-function-depth=⟨n⟩`` ``-XAllowAmbiguousTypes`` ``-XArrows`` ``-XApplicativeDo`` ``-XAutoDeriveTypeable`` ``-XBangPatterns`` ``-XBinaryLiterals`` ``-XCApiFFI`` ``-XConstrainedClassMethods`` ``-XConstraintKinds`` ``-XCPP`` ``-XDataKinds`` ``-XDefaultSignatures`` ``-XDeriveAnyClass`` ``-XDeriveDataTypeable`` ``-XDeriveFunctor`` ``-XDeriveFoldable`` ``-XDeriveGeneric`` ``-XDeriveGeneric`` ``-XDeriveLift`` ``-XDeriveTraversable`` ``-XDisambiguateRecordFields`` ``-XEmptyCase`` ``-XEmptyDataDecls`` ``-XExistentialQuantification`` ``-XExplicitForAll`` ``-XExplicitNamespaces`` ``-XExtendedDefaultRules`` ``-XFlexibleContexts`` ``-XFlexibleInstances`` ``-XForeignFunctionInterface`` ``-XFunctionalDependencies`` ``-XGADTs`` ``-XGADTSyntax`` ``-XGeneralizedNewtypeDeriving`` ``-XGenerics`` ``-XImplicitParams`` ``-XNoImplicitPrelude`` ``-XImpredicativeTypes`` ``-XIncoherentInstances`` ``-XTypeFamilyDependencies`` ``-XInstanceSigs`` ``-XInterruptibleFFI`` ``-XKindSignatures`` ``-XLambdaCase`` ``-XLiberalTypeSynonyms`` ``-XMagicHash`` ``-XMonadComprehensions`` ``-XMonoLocalBinds`` ``-XNoMonomorphismRestriction`` ``-XMultiParamTypeClasses`` ``-XMultiWayIf`` ``-XNamedFieldPuns`` ``-XNamedWildCards`` ``-XNegativeLiterals`` ``-XNoNPlusKPatterns`` ``-XNullaryTypeClasses`` ``-XNumDecimals`` ``-XOverlappingInstances`` ``-XOverloadedLists`` ``-XOverloadedStrings`` ``-XPackageImports`` ``-XParallelArrays`` ``-XParallelListComp`` ``-XPartialTypeSignatures`` ``-XPatternGuards`` ``-XPatternSynonyms`` ``-XPolyKinds`` ``-XPolymorphicComponents`` ``-XPostfixOperators`` ``-XQuasiQuotes`` ``-XRank2Types`` ``-XRankNTypes`` ``-XRebindableSyntax`` ``-XRecordWildCards`` ``-XRecursiveDo`` ``-XRelaxedPolyRec`` ``-XRoleAnnotations`` ``-XSafe`` ``-XScopedTypeVariables`` ``-XStandaloneDeriving`` ``-XStaticPointers`` ``-XStrictData`` ``-XTemplateHaskell`` ``-XTemplateHaskellQuotes`` ``-XNoTraditionalRecordSyntax`` ``-XTransformListComp`` ``-XTrustworthy`` ``-XTupleSections`` ``-XTypeFamilies`` ``-XTypeOperators`` ``-XTypeSynonymInstances`` ``-XUnboxedTuples`` ``-XUndecidableInstances`` ``-XUnicodeSyntax`` ``-XUnliftedFFITypes`` ``-XUnsafe`` ``-XViewPatterns``
 
 
 Linking options
@@ -45,7 +45,7 @@ Modes of operation
 
 
 Individual optimizations 
-    ``-fcall-arity`` ``-fcase-merge`` ``-fcmm-elim-common-blocks`` ``-fcmm-sink`` ``-fcpr-anal`` ``-fcse`` ``-fdicts-cheap`` ``-fdicts-strict`` ``-fdmd-tx-dict-sel`` ``-fdo-eta-reduction`` ``-fdo-lambda-eta-expansion`` ``-feager-blackholing`` ``-fenable-rewrite-rules`` ``-fexcess-precision`` ``-fexpose-all-unfoldings`` ``-ffloat-in`` ``-ffull-laziness`` ``-ffun-to-thunk`` ``-fignore-asserts`` ``-fignore-interface-pragmas`` ``-flate-dmd-anal`` ``-fliberate-case`` ``-fliberate-case-threshold=⟨n⟩`` ``-floopification`` ``-fmax-inline-alloc-size=⟨n⟩`` ``-fmax-inline-memcpy-insns=⟨n⟩`` ``-fmax-inline-memset-insns=⟨n⟩`` ``-fmax-relevant-binds=⟨n⟩`` ``-fmax-simplifier-iterations=⟨n⟩`` ``-fmax-worker-args=⟨n⟩`` ``-fno-opt-coercion`` ``-fno-pre-inlining`` ``-fno-state-hack`` ``-fomit-interface-pragmas`` ``-fomit-yields`` ``-fpedantic-bottoms`` ``-fregs-graph`` ``-fregs-iterative`` ``-fsimplifier-phases=⟨n⟩`` ``-fsimpl-tick-factor=⟨n⟩`` ``-fspec-constr`` ``-fspec-constr-count=⟨n⟩`` ``-fspec-constr-threshold=⟨n⟩`` ``-fspecialise`` ``-fcross-module-specialise`` ``-fstatic-argument-transformation`` ``-fstrictness`` ``-fstrictness-before=⟨n⟩`` ``-funbox-small-strict-fields`` ``-funbox-strict-fields`` ``-funfolding-creation-threshold=⟨n⟩`` ``-funfolding-dict-discount=⟨n⟩`` ``-funfolding-fun-discount=⟨n⟩`` ``-funfolding-keeness-factor=⟨n⟩`` ``-funfolding-use-threshold=⟨n⟩`` ``-fvectorisation-avoidance`` ``-fvectorise`` ``-fworker-wrapper``
+    ``-fcall-arity`` ``-fcase-merge`` ``-fcmm-elim-common-blocks`` ``-fcmm-sink`` ``-fcpr-anal`` ``-fcse`` ``-fdicts-cheap`` ``-fdicts-strict`` ``-fdmd-tx-dict-sel`` ``-fdo-eta-reduction`` ``-fdo-lambda-eta-expansion`` ``-feager-blackholing`` ``-fenable-rewrite-rules`` ``-fexcess-precision`` ``-fexpose-all-unfoldings`` ``-ffloat-in`` ``-ffull-laziness`` ``-ffun-to-thunk`` ``-fignore-asserts`` ``-fignore-interface-pragmas`` ``-flate-dmd-anal`` ``-fliberate-case`` ``-fliberate-case-threshold=⟨n⟩`` ``-floopification`` ``-fmax-inline-alloc-size=⟨n⟩`` ``-fmax-inline-memcpy-insns=⟨n⟩`` ``-fmax-inline-memset-insns=⟨n⟩`` ``-fmax-relevant-binds=⟨n⟩`` ``-fmax-uncovered-patterns=⟨n⟩`` ``-fmax-simplifier-iterations=⟨n⟩`` ``-fmax-worker-args=⟨n⟩`` ``-fno-opt-coercion`` ``-fno-pre-inlining`` ``-fno-state-hack`` ``-fomit-interface-pragmas`` ``-fomit-yields`` ``-foptimal-applicative-do`` ``-fpedantic-bottoms`` ``-fregs-graph`` ``-fregs-iterative`` ``-fsimplifier-phases=⟨n⟩`` ``-fsimpl-tick-factor=⟨n⟩`` ``-fspec-constr`` ``-fspec-constr-count=⟨n⟩`` ``-fspec-constr-threshold=⟨n⟩`` ``-fspecialise`` ``-fcross-module-specialise`` ``-fstatic-argument-transformation`` ``-fstrictness`` ``-fstrictness-before=⟨n⟩`` ``-funbox-small-strict-fields`` ``-funbox-strict-fields`` ``-funfolding-creation-threshold=⟨n⟩`` ``-funfolding-dict-discount=⟨n⟩`` ``-funfolding-fun-discount=⟨n⟩`` ``-funfolding-keeness-factor=⟨n⟩`` ``-funfolding-use-threshold=⟨n⟩`` ``-fvectorisation-avoidance`` ``-fvectorise`` ``-fworker-wrapper``
 
 
 Optimization levels
@@ -345,7 +345,7 @@ Finding imports
 ~~~~~~~~~~~~~~~
 
 
-``-i ⟨dir1⟩:⟨dir2⟩:...``
+``-i⟨dir1⟩:⟨dir2⟩:...``
     add ⟨dir⟩, ⟨dir2⟩, etc. to import path
 
 ``-i``
@@ -411,8 +411,14 @@ Keeping intermediate files
 ``-keep-hc-file, -keep-hc-files``
     Retain intermediate ``.hc`` files.
 
+``-keep-hi-files``
+    Retain intermediate ``.hi`` files (the default).
+
 ``-keep-llvm-file, -keep-llvm-files``
     Retain intermediate LLVM ``.ll`` files. Implies :ghc-flag:`-fllvm`.
+
+``-keep-o-files``
+    Retain intermediate ``.o`` files (the default).
 
 ``-keep-s-file, -keep-s-files``
     Retain intermediate ``.s`` files.
@@ -685,6 +691,9 @@ Language options
 
 ``-XStandaloneDeriving``
     Enable :ref:`standalone deriving <stand-alone-deriving>`.
+
+``-XStaticPointers``
+    Enable :ref:`static pointers <static-pointers>`.
 
 ``-XStrictData``
     Enable :ref:`default strict datatype fields <strict-data>`.
@@ -976,6 +985,9 @@ Individual optimizations
 ``-fmax-relevant-binds=⟨n⟩``
     *default: 6.* Set the maximum number of bindings to display in type error messages.
 
+``-fmax-uncovered-patterns=⟨n⟩``
+    *default: 4.* Set the maximum number of patterns to display in warnings about non-exhaustive ones.
+
 ``-fmax-simplifier-iterations=⟨n⟩``
     *default: 4.* Set the max iterations for the simplifier.
 
@@ -996,6 +1008,9 @@ Individual optimizations
 
 ``-fomit-yields``
     Omit heap checks when no allocation is being performed.
+
+``-foptimal-applicative-do``
+    Use a slower but better algorithm for ApplicativeDo
 
 ``-fpedantic-bottoms``
     Make GHC be more precise about its treatment of bottom (but see also :ghc-flag:`fno-state-hack`). In particular, GHC will not eta-expand through a case expression.

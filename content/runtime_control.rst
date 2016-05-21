@@ -285,6 +285,34 @@ performance.
     allocation area will be resized according to the amount of data in the heap
     (see :rts-flag:`-F`, below).
 
+.. rts-flag:: -AL ⟨size⟩
+
+    :default: ``-A`` value
+    :since: 8.2.1
+
+    .. index::
+       single: allocation area for large objects, size
+
+    Sets the limit on the total size of "large objects" (objects
+    larger than about 3KB) that can be allocated before a GC is
+    triggered.  By default this limit is the same as the ``-A`` value.
+
+    Large objects are not allocated from the normal allocation area
+    set by the ``-A`` flag, which is why there is a separate limit for
+    these.  Large objects tend to be much rarer than small objects, so
+    most programs hit the ``-A`` limit before the ``-AL`` limit.  However,
+    the ``-A`` limit is per-capability, whereas the ``-AL`` limit is global,
+    so as ``-N`` gets larger it becomes more likely that we hit the
+    ``-AL`` limit first.  To counteract this, it might be necessary to
+    use a larger ``-AL`` limit when using a large ``-N``.
+
+    To see whether you're making good use of all the memory reseverd
+    for the allocation area (``-A`` times ``-N``), look at the output of
+    ``+RTS -S`` and check whether the amount of memory allocated between
+    GCs is equal to ``-A`` times ``-N``. If not, there are two possible
+    remedies: use ``-n`` to set a nursery chunk size, or use ``-AL`` to
+    increase the limit for large objects.
+
 .. rts-flag:: -O ⟨size⟩
 
     :default: 1m
@@ -436,6 +464,30 @@ performance.
     load-balancing only in the old-generation. In fact, for a parallel
     program it is sometimes beneficial to disable load-balancing
     entirely with ``-qb``.
+
+.. rts-flag:: -qn <x>
+
+    :default: the value of ``-N``
+    :since: 8.2.1
+
+    .. index::
+       single: GC threads, setting the number of
+
+    By default, all of the capabilities participate in parallel
+    garbage collection.  If we want to use a very large ``-N`` value,
+    however, this can reduce the performance of the GC.  For this
+    reason, the ``-qn`` flag can be used to specify a lower number for
+    the threads that should participate in GC.  During GC, if there
+    are more than this number of workers active, some of them will
+    sleep for the duration of the GC.
+
+    The ``-qn`` flag may be useful when running with a large ``-A`` value
+    (so that GC is infrequent), and a large ``-N`` value (so as to make
+    use of hyperthreaded cores, for example).  For example, on a
+    24-core machine with 2 hyperthreads per core, we might use
+    ``-N48 -qn24 -A128m`` to specify that the mutator should use
+    hyperthreads but the GC should only use real cores.  Note that
+    this configuration would use 6GB for the allocation area.
 
 .. rts-flag:: -H [⟨size⟩]
 

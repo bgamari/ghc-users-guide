@@ -302,6 +302,10 @@ sequences. The following alternatives are provided:
 +--------------+---------------+-------------+--------------------------------+
 | ``forall``   | ∀             | 0x2200      | FOR ALL                        |
 +--------------+---------------+-------------+--------------------------------+
+| ``(|``       | ⦇             | 0x2987      | Z NOTATION LEFT IMAGE BRACKET  |
++--------------+---------------+-------------+--------------------------------+
+| ``|)``       | ⦈             | 0x2988      | Z NOTATION RIGHT IMAGE BRACKET |
++--------------+---------------+-------------+--------------------------------+
 
 .. _magic-hash:
 
@@ -939,6 +943,28 @@ then the expression will only require ``Applicative``. Otherwise, the expression
 will require ``Monad``. The block may return a pure expression ``E`` depending
 upon the results ``p1...pn`` with either ``return`` or ``pure``.
 
+Note: the final statement really must be of the form ``return E`` or
+``pure E``, otherwise you get a ``Monad`` constraint.  In particular,
+``return $ E`` is not of the form ``return E``, and will therefore
+incur a ``Monad`` constraint.
+
+When the statements of a ``do`` expression have dependencies between
+them, and ``ApplicativeDo`` cannot infer an ``Applicative`` type, it
+uses a heuristic algorithm to try to use ``<*>`` as much as possible.
+This algorithm usually finds the best solution, but in rare complex
+cases it might miss an opportunity.  There is an algorithm that finds
+the optimal solution, provided as an option:
+
+.. ghc-flag:: -foptimal-applicative-do
+
+    :since: 8.0.1
+
+    Enables an alternative algorithm for choosing where to use ``<*>``
+    in conjunction with the ``ApplicativeDo`` language extension.
+    This algorithm always finds the optimal solution, but it is
+    expensive: ``O(n^3)``, so this option can lead to long compile
+    times when there are very large ``do`` expressions (over 100
+    statements).  The default ``ApplicativeDo`` algorithm is ``O(n^2)``.
 
 .. _applicative-do-pitfall:
 
@@ -4280,7 +4306,7 @@ all currently bundled constructors. For example, we could write: ::
 in which case, ``Example`` would export the type constructor ``MyNum`` with
 the data constructor ``MkNum`` and also the pattern synonym ``Zero``.
 
-Bundled patterns synoyms are type checked to ensure that they are of the same
+Bundled patterns synonyms are type checked to ensure that they are of the same
 type as the type constructor which they are bundled with. A pattern synonym
 ``P`` can not be bundled with a type constructor ``T`` if ``P``\'s type is visibly
 incompatible with ``T``.
@@ -4525,8 +4551,8 @@ context.
 
 .. _class-method-types:
 
-Class method types
-~~~~~~~~~~~~~~~~~~
+Constrained class method types
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. ghc-flag:: -XConstrainedClassMethods
 
@@ -4542,6 +4568,21 @@ class type variable, thus: ::
 The type of ``elem`` is illegal in Haskell 98, because it contains the
 constraint ``Eq a``, which constrains only the class type variable (in
 this case ``a``).
+this case ``a``).  More precisely, a constraint in a class method signature is rejected if
+
+- The constraint mentions at least one type variable.  So this is allowed: ::
+
+     class C a where
+       op1 :: HasCallStack => a -> a
+       op2 :: (?x::Int) => Int -> a
+
+- All of the type variables mentioned are bound by the class declaration, and none is locally quantified.  Examples: ::
+
+     class C a where
+       op3 :: Eq a => a -> a    -- Rejected: constrains class variable only
+       op4 :: D b => a -> b     -- Accepted: constrains a locally-quantified varible `b`
+       op5 :: D (a,b) => a -> b -- Accepted: constrains a locally-quantified varible `b`
+
 
 GHC lifts this restriction with language extension
 :ghc-flag:`-XConstrainedClassMethods`. The restriction is a pretty stupid one in
@@ -6024,15 +6065,6 @@ instance for ``GMap`` is ::
 In this example, the declaration has only one variant. In general, it
 can be any number.
 
-When the name of a type argument of a data or newtype instance
-declaration doesn't matter, it can be replaced with an underscore
-(``_``). This is the same as writing a type variable with a unique name. ::
-
-    data family F a b :: *
-    data instance F Int _ = Int
-    -- Equivalent to
-    data instance F Int b = Int
-
 When the flag :ghc-flag:`-Wunused-type-patterns` is enabled, type
 variables that are mentioned in the patterns on the left hand side, but not
 used on the right hand side are reported. Variables that occur multiple times
@@ -6398,6 +6430,37 @@ If the option :ghc-flag:`-XUndecidableInstances` is passed to the compiler, the
 above restrictions are not enforced and it is on the programmer to ensure
 termination of the normalisation of type families during type inference.
 
+.. _type-wildcards-lhs:
+
+Wildcards on the LHS of data and type family instances
+------------------------------------------------------
+
+When the name of a type argument of a data or type instance
+declaration doesn't matter, it can be replaced with an underscore
+(``_``). This is the same as writing a type variable with a unique name. ::
+
+    data family F a b :: *
+    data instance F Int _ = Int
+    -- Equivalent to  data instance F Int b = Int
+
+    type family T a :: *
+    type instance T (a,_) = a
+    -- Equivalent to  type instance T (a,b) = a
+
+This use of underscore for wildcard in a type pattern is exactly like
+pattern matching in the term language, but is rather different to the
+use of a underscore in a partial type signature (see :ref:`type-wildcards`).
+
+A type variable beginning with an underscore is not treated specially in a
+type or data instance declaration.  For example: ::
+
+   data instance F Bool _a = _a -> Int
+   -- Equivalent to  data instance F Bool a = a -> Int
+
+Contrast this with the special treatment of named wildcards in
+type signatures (:ref:`named-wildcards`).
+
+
 .. _assoc-decl:
 
 Associated data and type families
@@ -6445,23 +6508,46 @@ keyword in the family instance: ::
       type Elem [e] = e
       ...
 
-Note the following points:
+The data or type family instance for an assocated type must follow
+the following two rules:
 
 -  The type indexes corresponding to class parameters must have
-   precisely the same shape the type given in the instance head. To have
-   the same "shape" means that the two types are identical modulo
-   renaming of type variables. For example: ::
+   precisely the same as type given in the instance head.
+   For example: ::
+
+       class Collects ce where
+         type Elem ce :: *
 
        instance Eq (Elem [e]) => Collects [e] where
          -- Choose one of the following alternatives:
          type Elem [e] = e       -- OK
-         type Elem [x] = x       -- OK
-         type Elem x   = x       -- BAD; shape of 'x' is different to '[e]'
-         type Elem [Maybe x] = x -- BAD: shape of '[Maybe x]' is different to '[e]'
+         type Elem [x] = x       -- BAD; '[x]' is differnet to '[e]' from head
+         type Elem x   = x       -- BAD; 'x' is different to '[e]'
+         type Elem [Maybe x] = x -- BAD: '[Maybe x]' is different to '[e]'
 
--  An instances for an associated family can only appear as part of an
+-  The type indexes of the type family that do *not* correspond to
+   class parameters must be distinct type variables, not mentioned
+   in the instance head.  For example: ::
+
+       class C b x where
+          type F a b c :: *
+
+       instance C [v] [w] where
+         -- Choose one of the following alternatives:
+         type C a [v] c = a->c  -- OK; a,c are tyvars
+         type C x [v] y = y->x  -- OK; x,y are tyvars
+         type C x [v] x = x     -- BAD: x is repeated
+         type C x [v] w = x     -- BAD: w is mentioned in instance head
+
+The effect of these two rules is that the type-family instance
+completely covers the cases covered by the instance head.
+
+-  An instance for an associated family can only appear as part of an
    instance declarations of the class in which the family was declared,
    just as with the equations of the methods of a class.
+
+-  The variables on the right hand side of the type family equation
+   must, as usual, be bound on the left hand side.
 
 -  The instance for an associated type can be omitted in class
    instances. In that case, unless there is a default instance (see
@@ -6469,9 +6555,9 @@ Note the following points:
    inhabited; i.e., only diverging expressions, such as ``undefined``,
    can assume the type.
 
--  Although it is unusual, there (currently) can be *multiple* instances
-   for an associated family in a single instance declaration. For
-   example, this is legitimate: ::
+-  A historical note.  In the past (but no longer), GHC allowed you to
+   write *multiple* type or data family instances for a single
+   asssociated type.  For example: ::
 
        instance GMapKey Flob where
          data GMap Flob [v] = G1 v
@@ -6480,10 +6566,23 @@ Note the following points:
 
    Here we give two data instance declarations, one in which the last
    parameter is ``[v]``, and one for which it is ``Int``. Since you
-   cannot give any *subsequent* instances for ``(GMap Flob ...)``, this
-   facility is most useful when the free indexed parameter is of a kind
-   with a finite number of alternatives (unlike ``*``). WARNING: this
-   facility may be withdrawn in the future.
+   cannot give any *subsequent* instances for ``(GMap Flob ...)``,
+   this facility was not very useful, except perhaps when the free
+   indexed parameter has a fixed number of alternatives
+   (e.g. ``Bool``). But in that case it is better to define an auxiliary
+   closed type function like this: ::
+
+       class C a where
+         type F a (b :: Bool) :: *
+
+       instance C Int where
+         type F Int b = FInt b
+
+       type family FInt a b where
+         FInt True  = Char
+         FInt False = Bool
+
+    Here the auxiliary type function is ``FInt``.
 
 .. _assoc-decl-defs:
 
@@ -7352,7 +7451,7 @@ signature" for a type constructor? These are the forms:
 
 -  An associated type or data family declaration has a CUSK precisely if
    its enclosing class has a CUSK. ::
-       
+
        class C a where                -- no CUSK
          type AT a b                  -- no CUSK, b is defaulted
 
@@ -7468,7 +7567,7 @@ Explicit kind quantification
 
 Enabled by :ghc-flag:`-XTypeInType`, GHC now supports explicit kind quantification,
 as in these examples: ::
-  
+
   data Proxy :: forall k. k -> *
   f :: (forall k (a :: k). Proxy a -> ()) -> Int
 
@@ -7628,7 +7727,7 @@ Here is an example of this in action: ::
 
 In the last line, we use the promoted constructor ``'MkCompose``, which has
 kind ::
-  
+
   forall (a :: *) (b :: *) (f :: b -> *) (g :: a -> b) (x :: a).
     f (g x) -> Compose f g x
 
@@ -7651,7 +7750,7 @@ these flags, especially :ghc-flag:`-fprint-explicit-kinds`.
 .. index::
    single: TYPE
    single: representation polymorphism
-   
+
 .. _runtime-rep:
 
 Runtime representation polymorphism
@@ -7678,7 +7777,7 @@ Here are the key definitions, all available from ``GHC.Exts``: ::
                   | PtrRepUnlifted   -- for things like `Array#`
                   | IntRep           -- for things like `Int#`
                   | ...
-  
+
   type * = TYPE PtrRepLifted    -- * is just an ordinary type synonym
 
 The idea is that we have a new fundamental type constant ``TYPE``, which
@@ -8855,7 +8954,7 @@ binding forms. For example, we define the ``min`` function by binding
 
 A group of implicit-parameter bindings may occur anywhere a normal group
 of Haskell bindings can occur, except at top level. That is, they can
-occur in a ``let`` (including in a list comprehension, or ``do``-notation,
+occur in a ``let`` (including in a list comprehension, or do-notation,
 or pattern guards), or a ``where`` clause. Note the following points:
 
 -  An implicit-parameter binding group must be a collection of simple
@@ -9641,11 +9740,9 @@ Where can they occur?
 ---------------------
 
 Partial type signatures are allowed for bindings, pattern and expression
-signatures. In all other contexts, e.g. type class or type family
-declarations, they are disallowed. In the following example a wildcard
-is used in each of the three possible contexts. Extra-constraints
+signatures, except that extra-constraints
 wildcards are not supported in pattern or expression signatures.
-
+In the following example a wildcard is used in each of the three possible contexts.
 ::
 
     {-# LANGUAGE ScopedTypeVariables #-}
@@ -9653,10 +9750,16 @@ wildcards are not supported in pattern or expression signatures.
     foo (x :: _) = (x :: _)
     -- Inferred: forall w_. w_ -> w_
 
-Anonymous and named wildcards *can* occur in type or data instance
-declarations. However, these declarations are not partial type signatures
-and different rules apply. See :ref:`data-instance-declarations` for more
-details.
+Anonymous and named wildcards *can* occur on the left hand side of a
+type or data instance declaration;
+see :ref:`type-wildcards-lhs`.
+
+In all other contexts, type wildcards are disallowed, and a named wildcard is treated
+as an ordinary type variable.  For example: ::
+
+   class C _ where ...          -- Illegal
+   instance Eq (T _)            -- Illegal (currently; would actually make sense)
+   instance Eq _a => Eq (T _a)  -- Perfectly fine, same as  Eq a => Eq (T a)
 
 Partial type signatures can also be used in :ref:`template-haskell`
 splices.
@@ -11036,7 +11139,7 @@ bang it would be lazy. Bang patterns can be nested of course: ::
 
     f2 (!x, y) = [x,y]
 
-Here, ``f2`` is strict in ``x`` but not in ``y``. 
+Here, ``f2`` is strict in ``x`` but not in ``y``.
 
 Note the following points:
 
@@ -11543,9 +11646,11 @@ The compiler includes entries in this table for all static forms found
 in the linked modules. The value can be obtained from the reference via
 :base-ref:`deRefStaticPtr <GHC-StaticPtr.html#v%3AdeRefStaticPtr>`.
 
-The body ``e`` of a ``static e`` expression must be a closed expression.
-That is, there can be no free variables occurring in ``e``, i.e. lambda-
-or let-bound variables bound locally in the context of the expression.
+The body ``e`` of a ``static e`` expression must be a closed expression. Where
+we say an expression is *closed* when all of its free (type) variables are
+closed. And a variable is *closed* if it is let-bound to a *closed* expression
+and its type is *closed* as well. And a type is *closed* if it has no free
+variables.
 
 All of the following are permissible: ::
 
@@ -11557,11 +11662,14 @@ All of the following are permissible: ::
     ref3 = static (inc 1)
     ref4 = static ((\x -> x + 1) (1 :: Int))
     ref5 y = static (let x = 1 in x)
+    ref6 y = let x = 1 in static x
 
 While the following definitions are rejected: ::
 
-    ref6 = let x = 1 in static x
-    ref7 y = static (let x = 1 in y)
+    ref7 y = let x = y in static x    -- x is not closed
+    ref8 y = static (let x = 1 in y)  -- y is not let-bound
+    ref8 (y :: a) = let x = undefined :: a
+                     in static x      -- x has a non-closed type
 
 .. _typechecking-static-pointers:
 
@@ -12937,16 +13045,20 @@ datatypes and their internal representation as a sum-of-products: ::
       -- Convert from the representation to the datatype
       to    :: (Rep a) x -> a
 
-    class Generic1 f where
-      type Rep1 f :: * -> *
+    class Generic1 (f :: k -> *) where
+      type Rep1 f :: k -> *
 
       from1  :: f a -> Rep1 f a
       to1    :: Rep1 f a -> f a
 
 ``Generic1`` is used for functions that can only be defined over type
-containers, such as ``map``. Instances of these classes can be derived
-by GHC with the :ghc-flag:`-XDeriveGeneric`, and are
-necessary to be able to define generic instances automatically.
+containers, such as ``map``. Note that ``Generic1`` ranges over types of kind
+``* -> *`` by default, but if the :ghc-flag:`-XPolyKinds` extension is enabled,
+then it can range of types of kind ``k -> *``, for any kind ``k``.
+
+Instances of these classes can be derived by GHC with the
+:ghc-flag:`-XDeriveGeneric` extension, and are necessary to be able to define
+generic instances automatically.
 
 For example, a user-defined datatype of trees ::
 

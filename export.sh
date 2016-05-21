@@ -5,6 +5,8 @@ if [ -z "$GHC_TREE" ]; then
         exit 1
 fi
 
+#make -C$GHC_TREE -j4 docs/users_guide_RST_SOURCES
+
 rm -Rf content/*
 mkdir -p content
 cp $GHC_TREE/docs/users_guide/*.{rst,py} content
