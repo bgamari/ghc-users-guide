@@ -6,7 +6,8 @@ if [ -z "$GHC_TREE" ]; then
 fi
 
 rm -f content/*
-cp $GHC_TREE/docs/users_guide/*.rst content
+mkdir -p content
+cp -R $GHC_TREE/docs/users_guide/ghc-theme content
 cp $GHC_TREE/docs/users_guide/*.{rst,py} content
 cp $GHC_TREE/docs/users_guide/ghc_config.py .
 cp -R $GHC_TREE/docs/users_guide/images .
