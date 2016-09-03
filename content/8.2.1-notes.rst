@@ -13,6 +13,7 @@ Highlights
 The highlights since the 8.0 branch are:
 
 - TODO FIXME
+- SCC annotations can now be used for declarations.
 
 Full details
 ------------
@@ -22,11 +23,20 @@ Language
 
 -  TODO FIXME.
 
+- Pattern synonym signatures can now be applied to multiple patterns, just like
+  value-level binding signatures. See :ref:`patsyn-typing` for details.
+
 Compiler
 ~~~~~~~~
 
-- GHC now compresses interface files with a fast compression
-  algorithm, meaning compiled artifacts should use less disk space.
+-  TODO FIXME.
+
+- Old profiling flags ``-auto-all``, ``-auto``, and ``-caf-all`` are deprecated
+  and their usage provokes a compile-time warning.
+
+- Support for adding cost centres to declarations is added. The same `SCC`
+  syntax can be used, in addition to a new form for specifying the cost centre
+  name. See :ref:`scc-pragma` for examples.
 
 GHCi
 ~~~~
@@ -38,10 +48,30 @@ Template Haskell
 
 -  TODO FIXME.
 
+- ``addModFinalizer`` now exposes the local typing environment at the splice
+  point. This allows ``reify`` to see local and top-level definitions in the
+  current declaration group when used as in
+
+  .. code-block:: none
+
+      f x = $(addModFinalizer (reify 'x >>= runIO . print) >> [| x |])
+
+-  Reifying types that contain unboxed tuples now works correctly. (Previously,
+   Template Haskell reified unboxed tuples as boxed tuples with twice their
+   appropriate arity.)
+
+-  Splicing singleton unboxed tuple types (e.g., ``(# Int #)``) now works
+   correctly. Previously, Template Haskell would implicitly remove the
+   parentheses when splicing, which would turn ``(# Int #)`` into ``Int``.
+
 Runtime system
 ~~~~~~~~~~~~~~
 
 -  TODO FIXME.
+
+- The :ref:`heap profiler <prof-heap>` can now emit heap census data to the GHC
+  event log, allowing heap profiles to be correlated with other tracing events
+  (see :ghc-ticket:`11094`).
 
 Build system
 ~~~~~~~~~~~~
@@ -75,6 +105,11 @@ base
 See ``changelog.md`` in the ``base`` package for full release notes.
 
 -  Version number 4.10.0.0 (was 4.9.0.0)
+
+- ``Data.Either`` now provides ``fromLeft`` and ``fromRight``
+
+- ``Data.Type.Coercion`` now provides ``gcoerceWith``, which is analogous to
+  ``gcastWith`` from ``Data.Type.Equality``.
 
 binary
 ~~~~~~
@@ -128,7 +163,10 @@ ghc-prim
 
 -  Version number XXXXX (was 0.3.1.0)
 
--  Added new ``isPinnedbyteArray#`` operation.
+-  Added new ``isByteArrayPinned#`` and ``isMutableByteArrayPinned#`` operation.
+
+-  New function ``noinline`` in ``GHC.Magic`` lets you mark that a function
+   should not be inlined.  It is optimized away after the simplifier runs.
 
 haskell98
 ~~~~~~~~~
@@ -174,6 +212,10 @@ template-haskell
 ~~~~~~~~~~~~~~~~
 
 -  Version number XXXXX (was 2.9.0.0)
+
+-  Added support for unboxed sums :ghc-ticket:`12478`.
+
+-  Added support for visible type applications :ghc-ticket:`12530`.
 
 time
 ~~~~

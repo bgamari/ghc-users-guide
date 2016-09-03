@@ -5,7 +5,7 @@ Code generation
 
 
 Debugging the compiler
-    ``-dcore-lint`` ``-ddump-to-file`` ``-ddump-asm`` ``-ddump-bcos`` ``-ddump-cmm`` ``-ddump-core-stats`` ``-ddump-cse`` ``-ddump-deriv`` ``-ddump-ds`` ``-ddump-foreign`` ``-ddump-hpc`` ``-ddump-inlinings`` ``-ddump-llvm`` ``-ddump-occur-anal`` ``-ddump-opt-cmm`` ``-ddump-parsed`` ``-ddump-prep`` ``-ddump-rn`` ``-ddump-rule-firings`` ``-ddump-rule-rewrites`` ``-ddump-rules`` ``-ddump-vect`` ``-ddump-simpl`` ``-ddump-simpl-iterations`` ``-ddump-spec`` ``-ddump-splices`` ``-ddump-stg`` ``-ddump-stranal`` ``-ddump-str-signatures`` ``-ddump-tc`` ``-dth-dec-file`` ``-ddump-types`` ``-ddump-worker-wrapper`` ``-ddump-if-trace`` ``-ddump-tc-trace`` ``-ddump-vt-trace`` ``-ddump-rn-trace`` ``-ddump-rn-stats`` ``-ddump-simpl-stats`` ``-dno-debug-output`` ``-dppr-debug`` ``-dppr-user-length`` ``-dppr-cols⟨N⟩`` ``-dppr-case-as-let`` ``-dsuppress-all`` ``-dsuppress-uniques`` ``-dsuppress-idinfo`` ``-dsuppress-unfoldings`` ``-dsuppress-module-prefixes`` ``-dsuppress-type-signatures`` ``-dsuppress-type-applications`` ``-dsuppress-coercions`` ``-dsource-stats`` ``-dcmm-lint`` ``-dstg-lint`` ``-dstg-stats`` ``-dverbose-core2core`` ``-dverbose-stg2stg`` ``-dshow-passes`` ``-dfaststring-stats`` ``-frule-check``
+    ``-dcore-lint`` ``-ddump-to-file`` ``-ddump-asm`` ``-ddump-bcos`` ``-ddump-cmm-from-stg`` ``-ddump-cmm-verbose`` ``-ddump-cmm`` ``-ddump-core-stats`` ``-ddump-cse`` ``-ddump-deriv`` ``-ddump-ds`` ``-ddump-foreign`` ``-ddump-hpc`` ``-ddump-inlinings`` ``-ddump-llvm`` ``-ddump-occur-anal`` ``-ddump-opt-cmm`` ``-ddump-parsed`` ``-ddump-prep`` ``-ddump-rn`` ``-ddump-rule-firings`` ``-ddump-rule-rewrites`` ``-ddump-rules`` ``-ddump-vect`` ``-ddump-simpl`` ``-ddump-simpl-iterations`` ``-ddump-spec`` ``-ddump-splices`` ``-ddump-stg`` ``-ddump-stranal`` ``-ddump-str-signatures`` ``-ddump-tc`` ``-dth-dec-file`` ``-ddump-types`` ``-ddump-worker-wrapper`` ``-ddump-if-trace`` ``-ddump-tc-trace`` ``-ddump-vt-trace`` ``-ddump-rn-trace`` ``-ddump-rn-stats`` ``-ddump-simpl-stats`` ``-dno-debug-output`` ``-dppr-debug`` ``-dppr-user-length`` ``-dppr-cols⟨N⟩`` ``-dppr-case-as-let`` ``-dsuppress-all`` ``-dsuppress-uniques`` ``-dsuppress-idinfo`` ``-dsuppress-unfoldings`` ``-dsuppress-module-prefixes`` ``-dsuppress-type-signatures`` ``-dsuppress-type-applications`` ``-dsuppress-coercions`` ``-dsource-stats`` ``-dcmm-lint`` ``-dstg-lint`` ``-dstg-stats`` ``-dverbose-core2core`` ``-dverbose-stg2stg`` ``-dshow-passes`` ``-dfaststring-stats`` ``-frule-check``
 
 
 C pre-processor
@@ -29,7 +29,7 @@ Keeping intermediate files
 
 
 Language options
-    ``-fconstraint-solver-iterations=⟨n⟩`` ``-freduction-depth=⟨n⟩`` ``-fcontext-stack=⟨n⟩`` ``-fglasgow-exts`` ``-firrefutable-tuples`` ``-fpackage-trust`` ``-ftype-function-depth=⟨n⟩`` ``-XAllowAmbiguousTypes`` ``-XArrows`` ``-XApplicativeDo`` ``-XAutoDeriveTypeable`` ``-XBangPatterns`` ``-XBinaryLiterals`` ``-XCApiFFI`` ``-XConstrainedClassMethods`` ``-XConstraintKinds`` ``-XCPP`` ``-XDataKinds`` ``-XDefaultSignatures`` ``-XDeriveAnyClass`` ``-XDeriveDataTypeable`` ``-XDeriveFunctor`` ``-XDeriveFoldable`` ``-XDeriveGeneric`` ``-XDeriveGeneric`` ``-XDeriveLift`` ``-XDeriveTraversable`` ``-XDisambiguateRecordFields`` ``-XEmptyCase`` ``-XEmptyDataDecls`` ``-XExistentialQuantification`` ``-XExplicitForAll`` ``-XExplicitNamespaces`` ``-XExtendedDefaultRules`` ``-XFlexibleContexts`` ``-XFlexibleInstances`` ``-XForeignFunctionInterface`` ``-XFunctionalDependencies`` ``-XGADTs`` ``-XGADTSyntax`` ``-XGeneralizedNewtypeDeriving`` ``-XGenerics`` ``-XImplicitParams`` ``-XNoImplicitPrelude`` ``-XImpredicativeTypes`` ``-XIncoherentInstances`` ``-XTypeFamilyDependencies`` ``-XInstanceSigs`` ``-XInterruptibleFFI`` ``-XKindSignatures`` ``-XLambdaCase`` ``-XLiberalTypeSynonyms`` ``-XMagicHash`` ``-XMonadComprehensions`` ``-XMonoLocalBinds`` ``-XNoMonomorphismRestriction`` ``-XMultiParamTypeClasses`` ``-XMultiWayIf`` ``-XNamedFieldPuns`` ``-XNamedWildCards`` ``-XNegativeLiterals`` ``-XNoNPlusKPatterns`` ``-XNullaryTypeClasses`` ``-XNumDecimals`` ``-XOverlappingInstances`` ``-XOverloadedLists`` ``-XOverloadedStrings`` ``-XPackageImports`` ``-XParallelArrays`` ``-XParallelListComp`` ``-XPartialTypeSignatures`` ``-XPatternGuards`` ``-XPatternSynonyms`` ``-XPolyKinds`` ``-XPolymorphicComponents`` ``-XPostfixOperators`` ``-XQuasiQuotes`` ``-XRank2Types`` ``-XRankNTypes`` ``-XRebindableSyntax`` ``-XRecordWildCards`` ``-XRecursiveDo`` ``-XRelaxedPolyRec`` ``-XRoleAnnotations`` ``-XSafe`` ``-XScopedTypeVariables`` ``-XStandaloneDeriving`` ``-XStaticPointers`` ``-XStrictData`` ``-XTemplateHaskell`` ``-XTemplateHaskellQuotes`` ``-XNoTraditionalRecordSyntax`` ``-XTransformListComp`` ``-XTrustworthy`` ``-XTupleSections`` ``-XTypeFamilies`` ``-XTypeOperators`` ``-XTypeSynonymInstances`` ``-XUnboxedTuples`` ``-XUndecidableInstances`` ``-XUnicodeSyntax`` ``-XUnliftedFFITypes`` ``-XUnsafe`` ``-XViewPatterns``
+    ``-fconstraint-solver-iterations=⟨n⟩`` ``-freduction-depth=⟨n⟩`` ``-fcontext-stack=⟨n⟩`` ``-fglasgow-exts`` ``-firrefutable-tuples`` ``-fpackage-trust`` ``-ftype-function-depth=⟨n⟩`` ``-XAllowAmbiguousTypes`` ``-XArrows`` ``-XApplicativeDo`` ``-XAutoDeriveTypeable`` ``-XBangPatterns`` ``-XBinaryLiterals`` ``-XCApiFFI`` ``-XConstrainedClassMethods`` ``-XConstraintKinds`` ``-XCPP`` ``-XDataKinds`` ``-XDefaultSignatures`` ``-XDeriveAnyClass`` ``-XDeriveDataTypeable`` ``-XDeriveFunctor`` ``-XDeriveFoldable`` ``-XDeriveGeneric`` ``-XDeriveGeneric`` ``-XDeriveLift`` ``-XDeriveTraversable`` ``-XDisambiguateRecordFields`` ``-XEmptyCase`` ``-XEmptyDataDecls`` ``-XExistentialQuantification`` ``-XExplicitForAll`` ``-XExplicitNamespaces`` ``-XExtendedDefaultRules`` ``-XFlexibleContexts`` ``-XFlexibleInstances`` ``-XForeignFunctionInterface`` ``-XFunctionalDependencies`` ``-XGADTs`` ``-XGADTSyntax`` ``-XGeneralizedNewtypeDeriving`` ``-XGenerics`` ``-XImplicitParams`` ``-XNoImplicitPrelude`` ``-XImpredicativeTypes`` ``-XIncoherentInstances`` ``-XTypeFamilyDependencies`` ``-XInstanceSigs`` ``-XInterruptibleFFI`` ``-XKindSignatures`` ``-XLambdaCase`` ``-XLiberalTypeSynonyms`` ``-XMagicHash`` ``-XMonadComprehensions`` ``-XMonoLocalBinds`` ``-XNoMonomorphismRestriction`` ``-XMultiParamTypeClasses`` ``-XMultiWayIf`` ``-XNamedFieldPuns`` ``-XNamedWildCards`` ``-XNegativeLiterals`` ``-XNPlusKPatterns`` ``-XNullaryTypeClasses`` ``-XNumDecimals`` ``-XOverlappingInstances`` ``-XOverloadedLists`` ``-XOverloadedStrings`` ``-XPackageImports`` ``-XParallelArrays`` ``-XParallelListComp`` ``-XPartialTypeSignatures`` ``-XNoPatternGuards`` ``-XPatternSynonyms`` ``-XPolyKinds`` ``-XPolymorphicComponents`` ``-XPostfixOperators`` ``-XQuasiQuotes`` ``-XRank2Types`` ``-XRankNTypes`` ``-XRebindableSyntax`` ``-XRecordWildCards`` ``-XRecursiveDo`` ``-XRelaxedPolyRec`` ``-XRoleAnnotations`` ``-XSafe`` ``-XScopedTypeVariables`` ``-XStandaloneDeriving`` ``-XStaticPointers`` ``-XStrictData`` ``-XTemplateHaskell`` ``-XTemplateHaskellQuotes`` ``-XNoTraditionalRecordSyntax`` ``-XTransformListComp`` ``-XTrustworthy`` ``-XTupleSections`` ``-XTypeFamilies`` ``-XTypeOperators`` ``-XTypeSynonymInstances`` ``-XUnboxedTuples`` ``-XUnboxedSums`` ``-XUndecidableInstances`` ``-XUnicodeSyntax`` ``-XUnliftedFFITypes`` ``-XUnsafe`` ``-XViewPatterns``
 
 
 Linking options
@@ -53,7 +53,7 @@ Optimization levels
 
 
 Package options
-    ``-this-unit-id⟨P⟩`` ``-package⟨P⟩`` ``-hide-all-packages`` ``-hide-package⟨name⟩`` ``-ignore-package⟨name⟩`` ``-package-db⟨file⟩`` ``-clear-package-db`` ``-no-global-package-db`` ``-global-package-db`` ``-no-user-package-db`` ``-user-package-db`` ``-no-auto-link-packages`` ``-trust⟨P⟩`` ``-distrust⟨P⟩`` ``-distrust-all``
+    ``-this-unit-id ⟨P⟩`` ``-package ⟨P⟩`` ``-hide-all-packages`` ``-hide-package ⟨name⟩`` ``-ignore-package ⟨name⟩`` ``-package-db ⟨file⟩`` ``-clear-package-db`` ``-no-global-package-db`` ``-global-package-db`` ``-no-user-package-db`` ``-user-package-db`` ``-no-auto-link-packages`` ``-trust ⟨P⟩`` ``-distrust ⟨P⟩`` ``-distrust-all`` ``-package-env ⟨file⟩|⟨name⟩``
 
 
 Phases of compilation
@@ -152,8 +152,14 @@ Debugging the compiler
 ``-ddump-bcos``
     Dump interpreter byte code
 
+``-ddump-cmm-from-stg``
+    Dump STG-to-C-- output
+
+``-ddump-cmm-verbose``
+    Show output from each C-- pipeline pass
+
 ``-ddump-cmm``
-    Dump C-- output
+    Dump the final C-- output
 
 ``-ddump-core-stats``
     Print a one-line summary of the size of the Core program at the end of the optimisation pipeline
@@ -462,7 +468,7 @@ Language options
     Enable :ref:`Applicative do-notation desugaring <applicative-do>`
 
 ``-XAutoDeriveTypeable``
-    As of GHC 7.10, this option is not needed, and should not be used. Previously this would automatically :ref:`derive Typeable instances for every datatype and type class declaration <deriving-typeable>`. Implies :ghc-flag:`XDeriveDataTypeable`.
+    As of GHC 7.10, this option is not needed, and should not be used. Previously this would automatically :ref:`derive Typeable instances for every datatype and type class declaration <deriving-typeable>`. Implies :ghc-flag:`-XDeriveDataTypeable`.
 
 ``-XBangPatterns``
     Enable :ref:`bang patterns <bang-patterns>`.
@@ -492,13 +498,13 @@ Language options
     Enable :ref:`deriving for any class <derive-any-class>`.
 
 ``-XDeriveDataTypeable``
-    Enable ``deriving`` for the :ref:`Data class <deriving-typeable>`. Implied by :ghc-flag:`XAutoDeriveTypeable`.
+    Enable ``deriving`` for the :ref:`Data class <deriving-typeable>`. Implied by :ghc-flag:`-XAutoDeriveTypeable`.
 
 ``-XDeriveFunctor``
-    Enable :ref:`deriving for the Functor class <deriving-extra>`. Implied by :ghc-flag:`XDeriveTraversable`.
+    Enable :ref:`deriving for the Functor class <deriving-extra>`. Implied by :ghc-flag:`-XDeriveTraversable`.
 
 ``-XDeriveFoldable``
-    Enable :ref:`deriving for the Foldable class <deriving-extra>`. Implied by :ghc-flag:`XDeriveTraversable`.
+    Enable :ref:`deriving for the Foldable class <deriving-extra>`. Implied by :ghc-flag:`-XDeriveTraversable`.
 
 ``-XDeriveGeneric``
     Enable :ref:`deriving for the Generic class <deriving-typeable>`.
@@ -510,10 +516,10 @@ Language options
     Enable :ref:`deriving for the Lift class <deriving-lift>`
 
 ``-XDeriveTraversable``
-    Enable :ref:`deriving for the Traversable class <deriving-extra>`. Implies :ghc-flag:`XDeriveFunctor` and :ghc-flag:`XDeriveFoldable`.
+    Enable :ref:`deriving for the Traversable class <deriving-extra>`. Implies :ghc-flag:`-XDeriveFunctor` and :ghc-flag:`-XDeriveFoldable`.
 
 ``-XDisambiguateRecordFields``
-    Enable :ref:`record field disambiguation <disambiguate-fields>`. Implied by :ghc-flag:`XRecordWildCards`.
+    Enable :ref:`record field disambiguation <disambiguate-fields>`. Implied by :ghc-flag:`-XRecordWildCards`.
 
 ``-XEmptyCase``
     Allow :ref:`empty case alternatives <empty-case>`.
@@ -525,28 +531,28 @@ Language options
     Enable :ref:`existential quantification <existential-quantification>`.
 
 ``-XExplicitForAll``
-    Enable :ref:`explicit universal quantification <explicit-foralls>`. Implied by :ghc-flag:`XScopedTypeVariables`, :ghc-flag:`XLiberalTypeSynonyms`, :ghc-flag:`XRankNTypes` and :ghc-flag:`XExistentialQuantification`.
+    Enable :ref:`explicit universal quantification <explicit-foralls>`. Implied by :ghc-flag:`-XScopedTypeVariables`, :ghc-flag:`-XLiberalTypeSynonyms`, :ghc-flag:`-XRankNTypes` and :ghc-flag:`-XExistentialQuantification`.
 
 ``-XExplicitNamespaces``
-    Enable using the keyword ``type`` to specify the namespace of entries in imports and exports (:ref:`explicit-namespaces`). Implied by :ghc-flag:`XTypeOperators` and :ghc-flag:`XTypeFamilies`.
+    Enable using the keyword ``type`` to specify the namespace of entries in imports and exports (:ref:`explicit-namespaces`). Implied by :ghc-flag:`-XTypeOperators` and :ghc-flag:`-XTypeFamilies`.
 
 ``-XExtendedDefaultRules``
     Use GHCi's :ref:`extended default rules <extended-default-rules>` in a normal module.
 
 ``-XFlexibleContexts``
-    Enable :ref:`flexible contexts <flexible-contexts>`. Implied by :ghc-flag:`XImplicitParams`.
+    Enable :ref:`flexible contexts <flexible-contexts>`. Implied by :ghc-flag:`-XImplicitParams`.
 
 ``-XFlexibleInstances``
-    Enable :ref:`flexible instances <instance-rules>`. Implies :ghc-flag:`XTypeSynonymInstances`. Implied by :ghc-flag:`XImplicitParams`.
+    Enable :ref:`flexible instances <instance-rules>`. Implies :ghc-flag:`-XTypeSynonymInstances`. Implied by :ghc-flag:`-XImplicitParams`.
 
 ``-XForeignFunctionInterface``
     Enable :ref:`foreign function interface <ffi>`.
 
 ``-XFunctionalDependencies``
-    Enable :ref:`functional dependencies <functional-dependencies>`. Implies :ghc-flag:`XMultiParamTypeClasses`.
+    Enable :ref:`functional dependencies <functional-dependencies>`. Implies :ghc-flag:`-XMultiParamTypeClasses`.
 
 ``-XGADTs``
-    Enable :ref:`generalised algebraic data types <gadt>`. Implies :ghc-flag:`XGADTSyntax` and :ghc-flag:`XMonoLocalBinds`.
+    Enable :ref:`generalised algebraic data types <gadt>`. Implies :ghc-flag:`-XGADTSyntax` and :ghc-flag:`-XMonoLocalBinds`.
 
 ``-XGADTSyntax``
     Enable :ref:`generalised algebraic data type syntax <gadt-style>`.
@@ -558,19 +564,19 @@ Language options
     Deprecated, does nothing. No longer enables :ref:`generic classes <generic-classes>`. See also GHC's support for :ref:`generic programming <generic-programming>`.
 
 ``-XImplicitParams``
-    Enable :ref:`Implicit Parameters <implicit-parameters>`. Implies :ghc-flag:`XFlexibleContexts` and :ghc-flag:`XFlexibleInstances`.
+    Enable :ref:`Implicit Parameters <implicit-parameters>`. Implies :ghc-flag:`-XFlexibleContexts` and :ghc-flag:`-XFlexibleInstances`.
 
 ``-XNoImplicitPrelude``
-    Don't implicitly ``import Prelude``. Implied by :ghc-flag:`XRebindableSyntax`.
+    Don't implicitly ``import Prelude``. Implied by :ghc-flag:`-XRebindableSyntax`.
 
 ``-XImpredicativeTypes``
-    Enable :ref:`impredicative types <impredicative-polymorphism>`. Implies :ghc-flag:`XRankNTypes`.
+    Enable :ref:`impredicative types <impredicative-polymorphism>`. Implies :ghc-flag:`-XRankNTypes`.
 
 ``-XIncoherentInstances``
-    Enable :ref:`incoherent instances <instance-overlap>`. Implies :ghc-flag:`XOverlappingInstances`.
+    Enable :ref:`incoherent instances <instance-overlap>`. Implies :ghc-flag:`-XOverlappingInstances`.
 
 ``-XTypeFamilyDependencies``
-    Enable :ref:`injective type families <injective-ty-fams>`. Implies :ghc-flag:`XTypeFamilies`.
+    Enable :ref:`injective type families <injective-ty-fams>`. Implies :ghc-flag:`-XTypeFamilies`.
 
 ``-XInstanceSigs``
     Enable :ref:`instance signatures <instance-sigs>`.
@@ -579,7 +585,7 @@ Language options
     Enable interruptible FFI.
 
 ``-XKindSignatures``
-    Enable :ref:`kind signatures <kinding>`. Implied by :ghc-flag:`XTypeFamilies` and :ghc-flag:`XPolyKinds`.
+    Enable :ref:`kind signatures <kinding>`. Implied by :ghc-flag:`-XTypeFamilies` and :ghc-flag:`-XPolyKinds`.
 
 ``-XLambdaCase``
     Enable :ref:`lambda-case expressions <lambda-case>`.
@@ -594,13 +600,13 @@ Language options
     Enable :ref:`monad comprehensions <monad-comprehensions>`.
 
 ``-XMonoLocalBinds``
-    Enable :ref:`do not generalise local bindings <mono-local-binds>`. Implied by :ghc-flag:`XTypeFamilies` and :ghc-flag:`XGADTs`.
+    Enable :ref:`do not generalise local bindings <mono-local-binds>`. Implied by :ghc-flag:`-XTypeFamilies` and :ghc-flag:`-XGADTs`.
 
 ``-XNoMonomorphismRestriction``
     Disable the :ref:`monomorphism restriction <monomorphism>`.
 
 ``-XMultiParamTypeClasses``
-    Enable :ref:`multi parameter type classes <multi-param-type-classes>`. Implied by :ghc-flag:`XFunctionalDependencies`.
+    Enable :ref:`multi parameter type classes <multi-param-type-classes>`. Implied by :ghc-flag:`-XFunctionalDependencies`.
 
 ``-XMultiWayIf``
     Enable :ref:`multi-way if-expressions <multi-way-if>`.
@@ -614,11 +620,11 @@ Language options
 ``-XNegativeLiterals``
     Enable support for :ref:`negative literals <negative-literals>`.
 
-``-XNoNPlusKPatterns``
-    Disable support for ``n+k`` patterns.
+``-XNPlusKPatterns``
+    Enable support for ``n+k`` patterns. Implied by :ghc-flag:`-XHaskell98`.
 
 ``-XNullaryTypeClasses``
-    Deprecated, does nothing. :ref:`nullary (no parameter) type classes <nullary-type-classes>` are now enabled using :ghc-flag:`XMultiParamTypeClasses`.
+    Deprecated, does nothing. :ref:`nullary (no parameter) type classes <nullary-type-classes>` are now enabled using :ghc-flag:`-XMultiParamTypeClasses`.
 
 ``-XNumDecimals``
     Enable support for 'fractional' integer literals.
@@ -636,25 +642,25 @@ Language options
     Enable :ref:`package-qualified imports <package-imports>`.
 
 ``-XParallelArrays``
-    Enable parallel arrays. Implies :ghc-flag:`XParallelListComp`.
+    Enable parallel arrays. Implies :ghc-flag:`-XParallelListComp`.
 
 ``-XParallelListComp``
-    Enable :ref:`parallel list comprehensions <parallel-list-comprehensions>`. Implied by :ghc-flag:`XParallelArrays`.
+    Enable :ref:`parallel list comprehensions <parallel-list-comprehensions>`. Implied by :ghc-flag:`-XParallelArrays`.
 
 ``-XPartialTypeSignatures``
     Enable :ref:`partial type signatures <partial-type-signatures>`.
 
-``-XPatternGuards``
-    Enable :ref:`pattern guards <pattern-guards>`.
+``-XNoPatternGuards``
+    Disable :ref:`pattern guards <pattern-guards>`. Implied by :ghc-flag:`-XHaskell98`.
 
 ``-XPatternSynonyms``
     Enable :ref:`pattern synonyms <pattern-synonyms>`.
 
 ``-XPolyKinds``
-    Enable :ref:`kind polymorphism <kind-polymorphism>`. Implies :ghc-flag:`XKindSignatures`.
+    Enable :ref:`kind polymorphism <kind-polymorphism>`. Implies :ghc-flag:`-XKindSignatures`.
 
 ``-XPolymorphicComponents``
-    Enable :ref:`polymorphic components for data constructors <universal-quantification>`. Synonym for :ghc-flag:`XRankNTypes`.
+    Enable :ref:`polymorphic components for data constructors <universal-quantification>`. Synonym for :ghc-flag:`-XRankNTypes`.
 
 ``-XPostfixOperators``
     Enable :ref:`postfix operators <postfix-operators>`.
@@ -663,16 +669,16 @@ Language options
     Enable :ref:`quasiquotation <th-quasiquotation>`.
 
 ``-XRank2Types``
-    Enable :ref:`rank-2 types <universal-quantification>`. Synonym for :ghc-flag:`XRankNTypes`.
+    Enable :ref:`rank-2 types <universal-quantification>`. Synonym for :ghc-flag:`-XRankNTypes`.
 
 ``-XRankNTypes``
-    Enable :ref:`rank-N types <universal-quantification>`. Implied by :ghc-flag:`XImpredicativeTypes`.
+    Enable :ref:`rank-N types <universal-quantification>`. Implied by :ghc-flag:`-XImpredicativeTypes`.
 
 ``-XRebindableSyntax``
-    Employ :ref:`rebindable syntax <rebindable-syntax>`. Implies :ghc-flag:`XNoImplicitPrelude`.
+    Employ :ref:`rebindable syntax <rebindable-syntax>`. Implies :ghc-flag:`-XNoImplicitPrelude`.
 
 ``-XRecordWildCards``
-    Enable :ref:`record wildcards <record-wildcards>`. Implies :ghc-flag:`XDisambiguateRecordFields`.
+    Enable :ref:`record wildcards <record-wildcards>`. Implies :ghc-flag:`-XDisambiguateRecordFields`.
 
 ``-XRecursiveDo``
     Enable :ref:`recursive do (mdo) notation <recursive-do-notation>`.
@@ -717,16 +723,19 @@ Language options
     Enable :ref:`tuple sections <tuple-sections>`.
 
 ``-XTypeFamilies``
-    Enable :ref:`type families <type-families>`. Implies :ghc-flag:`XExplicitNamespaces`, :ghc-flag:`XKindSignatures`, and :ghc-flag:`XMonoLocalBinds`.
+    Enable :ref:`type families <type-families>`. Implies :ghc-flag:`-XExplicitNamespaces`, :ghc-flag:`-XKindSignatures`, and :ghc-flag:`-XMonoLocalBinds`.
 
 ``-XTypeOperators``
-    Enable :ref:`type operators <type-operators>`. Implies :ghc-flag:`XExplicitNamespaces`.
+    Enable :ref:`type operators <type-operators>`. Implies :ghc-flag:`-XExplicitNamespaces`.
 
 ``-XTypeSynonymInstances``
-    Enable :ref:`type synonyms in instance heads <flexible-instance-head>`. Implied by :ghc-flag:`XFlexibleInstances`.
+    Enable :ref:`type synonyms in instance heads <flexible-instance-head>`. Implied by :ghc-flag:`-XFlexibleInstances`.
 
 ``-XUnboxedTuples``
     Enable :ref:`unboxed tuples <unboxed-tuples>`.
+
+``-XUnboxedSums``
+    Enable :ref: `unboxed sums <unboxed-sums>`.
 
 ``-XUndecidableInstances``
     Enable :ref:`undecidable instances <undecidable-instances>`.
@@ -788,7 +797,7 @@ Linking options
     Set the default RTS options to ⟨opts⟩.
 
 ``-no-rtsopts-suggestions``
-    Don't print RTS suggestions about linking with :ghc-flag:`rtsopts`.
+    Don't print RTS suggestions about linking with :ghc-flag:`-rtsopts`.
 
 ``-no-link``
     Omit linking
@@ -809,7 +818,7 @@ Linking options
     Use the debugging runtime
 
 ``-ticky``
-    For linking, this simply implies :ghc-flag:`debug`; see :ref:`ticky-ticky`.
+    For linking, this simply implies :ghc-flag:`-debug`; see :ref:`ticky-ticky`.
 
 ``-eventlog``
     Enable runtime event tracing
@@ -835,7 +844,7 @@ Miscellaneous options
 
 
 ``-jN``
-    When compiling with :ghc-flag:`-make`, compile ⟨N⟩ modules in parallel.
+    When compiling with :ghc-flag:`--make`, compile ⟨N⟩ modules in parallel.
 
 ``-fno-hi-version-check``
     Don't complain about ``.hi`` file mismatches
@@ -902,22 +911,22 @@ Individual optimizations
 
 
 ``-fcall-arity``
-    Enable call-arity optimisation. Implied by :ghc-flag:`O`.
+    Enable call-arity optimisation. Implied by :ghc-flag:`-O`.
 
 ``-fcase-merge``
-    Enable case-merging. Implied by :ghc-flag:`O`.
+    Enable case-merging. Implied by :ghc-flag:`-O`.
 
 ``-fcmm-elim-common-blocks``
-    Enable Cmm common block elimination. Implied by :ghc-flag:`O`.
+    Enable Cmm common block elimination. Implied by :ghc-flag:`-O`.
 
 ``-fcmm-sink``
-    Enable Cmm sinking. Implied by :ghc-flag:`O`.
+    Enable Cmm sinking. Implied by :ghc-flag:`-O`.
 
 ``-fcpr-anal``
-    Turn on CPR analysis in the demand analyser. Implied by :ghc-flag:`O`.
+    Turn on CPR analysis in the demand analyser. Implied by :ghc-flag:`-O`.
 
 ``-fcse``
-    Enable common sub-expression elimination. Implied by :ghc-flag:`O`.
+    Enable common sub-expression elimination. Implied by :ghc-flag:`-O`.
 
 ``-fdicts-cheap``
     Make dictionary-valued expressions seem cheap to the optimiser.
@@ -929,7 +938,7 @@ Individual optimizations
     Use a special demand transformer for dictionary selectors. Always enabled by default.
 
 ``-fdo-eta-reduction``
-    Enable eta-reduction. Implied by :ghc-flag:`O`.
+    Enable eta-reduction. Implied by :ghc-flag:`-O`.
 
 ``-fdo-lambda-eta-expansion``
     Enable lambda eta-expansion. Always enabled by default.
@@ -938,7 +947,7 @@ Individual optimizations
     Turn on :ref:`eager blackholing <parallel-compile-options>`
 
 ``-fenable-rewrite-rules``
-    Switch on all rewrite rules (including rules generated by automatic specialisation of overloaded functions). Implied by :ghc-flag:`O`.
+    Switch on all rewrite rules (including rules generated by automatic specialisation of overloaded functions). Implied by :ghc-flag:`-O`.
 
 ``-fexcess-precision``
     Enable excess intermediate precision
@@ -947,31 +956,31 @@ Individual optimizations
     Expose all unfoldings, even for very large or recursive functions.
 
 ``-ffloat-in``
-    Turn on the float-in transformation. Implied by :ghc-flag:`O`.
+    Turn on the float-in transformation. Implied by :ghc-flag:`-O`.
 
 ``-ffull-laziness``
-    Turn on full laziness (floating bindings outwards). Implied by :ghc-flag:`O`.
+    Turn on full laziness (floating bindings outwards). Implied by :ghc-flag:`-O`.
 
 ``-ffun-to-thunk``
     Allow worker-wrapper to convert a function closure into a thunk if the function does not use any of its arguments. Off by default.
 
 ``-fignore-asserts``
-    Ignore assertions in the source. Implied by :ghc-flag:`O`.
+    Ignore assertions in the source. Implied by :ghc-flag:`-O`.
 
 ``-fignore-interface-pragmas``
-    Ignore pragmas in interface files. Implied by :ghc-flag:`O0` only.
+    Ignore pragmas in interface files. Implied by :ghc-flag:`-O0` only.
 
 ``-flate-dmd-anal``
     Run demand analysis again, at the end of the simplification pipeline
 
 ``-fliberate-case``
-    Turn on the liberate-case transformation. Implied by :ghc-flag:`O2`.
+    Turn on the liberate-case transformation. Implied by :ghc-flag:`-O2`.
 
 ``-fliberate-case-threshold=⟨n⟩``
     *default: 2000.* Set the size threshold for the liberate-case transformation to ⟨n⟩
 
 ``-floopification``
-    Turn saturated self-recursive tail-calls into local jumps in the generated assembly. Implied by :ghc-flag:`O`.
+    Turn saturated self-recursive tail-calls into local jumps in the generated assembly. Implied by :ghc-flag:`-O`.
 
 ``-fmax-inline-alloc-size=⟨n⟩``
     *default: 128.* Set the maximum size of inline array allocations to ⟨n⟩ bytes (default: 128). GHC will allocate non-pinned arrays of statically known size in the current nursery block if they're no bigger than ⟨n⟩ bytes, ignoring GC overheap. This value should be quite a bit smaller than the block size (typically: 4096).
@@ -1004,7 +1013,7 @@ Individual optimizations
     Turn off the "state hack" whereby any lambda with a real-world state token as argument is considered to be single-entry. Hence OK to inline things inside it.
 
 ``-fomit-interface-pragmas``
-    Don't generate interface pragmas. Implied by :ghc-flag:`O0` only.
+    Don't generate interface pragmas. Implied by :ghc-flag:`-O0` only.
 
 ``-fomit-yields``
     Omit heap checks when no allocation is being performed.
@@ -1013,22 +1022,22 @@ Individual optimizations
     Use a slower but better algorithm for ApplicativeDo
 
 ``-fpedantic-bottoms``
-    Make GHC be more precise about its treatment of bottom (but see also :ghc-flag:`fno-state-hack`). In particular, GHC will not eta-expand through a case expression.
+    Make GHC be more precise about its treatment of bottom (but see also :ghc-flag:`-fno-state-hack`). In particular, GHC will not eta-expand through a case expression.
 
 ``-fregs-graph``
-    Use the graph colouring register allocator for register allocation in the native code generator. Implied by :ghc-flag:`O2`.
+    Use the graph colouring register allocator for register allocation in the native code generator. Implied by :ghc-flag:`-O2`.
 
 ``-fregs-iterative``
     Use the iterative coalescing graph colouring register allocator in the native code generator.
 
 ``-fsimplifier-phases=⟨n⟩``
-    *default: 2.* Set the number of phases for the simplifier. Ignored with :ghc-flag:`O0`.
+    *default: 2.* Set the number of phases for the simplifier. Ignored with :ghc-flag:`-O0`.
 
 ``-fsimpl-tick-factor=⟨n⟩``
     *default: 100.* Set the percentage factor for simplifier ticks.
 
 ``-fspec-constr``
-    Turn on the SpecConstr transformation. Implied by :ghc-flag:`O2`.
+    Turn on the SpecConstr transformation. Implied by :ghc-flag:`-O2`.
 
 ``-fspec-constr-count=⟨n⟩``
     default: 3.* Set to ⟨n⟩ the maximum number of specialisations that will be created for any one function by the SpecConstr transformation.
@@ -1037,7 +1046,7 @@ Individual optimizations
     *default: 2000.* Set the size threshold for the SpecConstr transformation to ⟨n⟩.
 
 ``-fspecialise``
-    Turn on specialisation of overloaded functions. Implied by :ghc-flag:`O`.
+    Turn on specialisation of overloaded functions. Implied by :ghc-flag:`-O`.
 
 ``-fcross-module-specialise``
     Turn on specialisation of overloaded functions imported from other modules.
@@ -1046,13 +1055,13 @@ Individual optimizations
     Turn on the static argument transformation.
 
 ``-fstrictness``
-    Turn on strictness analysis. Implied by :ghc-flag:`O`. Implies :ghc-flag:`fworker-wrapper`
+    Turn on strictness analysis. Implied by :ghc-flag:`-O`. Implies :ghc-flag:`-fworker-wrapper`
 
 ``-fstrictness-before=⟨n⟩``
     Run an additional strictness analysis before simplifier phase ⟨n⟩
 
 ``-funbox-small-strict-fields``
-    Flatten strict constructor fields with a pointer-sized representation. Implied by :ghc-flag:`O`.
+    Flatten strict constructor fields with a pointer-sized representation. Implied by :ghc-flag:`-O`.
 
 ``-funbox-strict-fields``
     Flatten strict constructor fields
@@ -1079,7 +1088,7 @@ Individual optimizations
     Enable vectorisation of nested data parallelism
 
 ``-fworker-wrapper``
-    Enable the worker-wrapper transformation after a strictness analysis pass. Implied by :ghc-flag:`O`, and by :ghc-flag:`fstrictness`. Disabled by :ghc-flag:`fno-strictness`. Enabling :ghc-flag:`fworker-wrapper` while strictness analysis is disabled (by :ghc-flag:`fno-strictness`) has no effect.
+    Enable the worker-wrapper transformation after a strictness analysis pass. Implied by :ghc-flag:`-O`, and by :ghc-flag:`-fstrictness`. Disabled by :ghc-flag:`-fno-strictness`. Enabling :ghc-flag:`-fworker-wrapper` while strictness analysis is disabled (by :ghc-flag:`-fno-strictness`) has no effect.
 
 
 Optimization levels
@@ -1103,22 +1112,22 @@ Package options
 ~~~~~~~~~~~~~~~
 
 
-``-this-unit-id⟨P⟩``
+``-this-unit-id ⟨P⟩``
     Compile to be part of unit (i.e. package) ⟨P⟩
 
-``-package⟨P⟩``
+``-package ⟨P⟩``
     Expose package ⟨P⟩
 
 ``-hide-all-packages``
     Hide all packages by default
 
-``-hide-package⟨name⟩``
+``-hide-package ⟨name⟩``
     Hide package ⟨P⟩
 
-``-ignore-package⟨name⟩``
+``-ignore-package ⟨name⟩``
     Ignore package ⟨P⟩
 
-``-package-db⟨file⟩``
+``-package-db ⟨file⟩``
     Add ⟨file⟩ to the package db stack.
 
 ``-clear-package-db``
@@ -1139,14 +1148,17 @@ Package options
 ``-no-auto-link-packages``
     Don't automatically link in the base and rts packages.
 
-``-trust⟨P⟩``
+``-trust ⟨P⟩``
     Expose package ⟨P⟩ and set it to be trusted
 
-``-distrust⟨P⟩``
+``-distrust ⟨P⟩``
     Expose package ⟨P⟩ and set it to be distrusted
 
 ``-distrust-all``
     Distrust all packages by default
+
+``-package-env ⟨file⟩|⟨name⟩``
+    Use the specified package environment.
 
 
 Phases of compilation
@@ -1154,7 +1166,7 @@ Phases of compilation
 
 
 ``-F``
-    Enable the use of a :ref:`pre-processor <pre-processor>` (set with :ghc-flag:`pgmF`)
+    Enable the use of a :ref:`pre-processor <pre-processor>` (set with :ghc-flag:`-pgmF`)
 
 ``-E``
     Stop after preprocessing (``.hspp`` file)
@@ -1312,7 +1324,7 @@ Recompilation checking
 
 
 ``-fforce-recomp``
-    Turn off recompilation checking. This is implied by any ``-ddump-X`` option when compiling a single file (i.e. when using :ghc-flag:`c`).
+    Turn off recompilation checking. This is implied by any ``-ddump-X`` option when compiling a single file (i.e. when using :ghc-flag:`-c`).
 
 
 Redirecting output
@@ -1381,16 +1393,16 @@ Verbosity options
     display all available instances in type error messages
 
 ``-fprint-explicit-foralls``
-    Print explicit ``forall`` quantification in types. See also :ghc-flag:`XExplicitForAll`
+    Print explicit ``forall`` quantification in types. See also :ghc-flag:`-XExplicitForAll`
 
 ``-fprint-explicit-kinds``
-    Print explicit kind foralls and kind arguments in types. See also :ghc-flag:`XKindSignature`
+    Print explicit kind foralls and kind arguments in types. See also :ghc-flag:`-XKindSignature`
 
 ``-fprint-explicit-runtime-reps``
     Print ``RuntimeRep`` variables in types which are runtime-representation polymorphic.
 
 ``-fprint-unicode-syntax``
-    Use unicode syntax when printing expressions, types and kinds. See also :ghc-flag:`XUnicodeSyntax`
+    Use unicode syntax when printing expressions, types and kinds. See also :ghc-flag:`-XUnicodeSyntax`
 
 ``-fprint-expanded-synonyms``
     In type errors, also print type-synonym-expanded types.
@@ -1434,10 +1446,10 @@ Warnings
     show which group an emitted warning belongs to.
 
 ``-fdefer-type-errors``
-    Turn type errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implies :ghc-flag:`fdefer-typed-holes`. See also :ghc-flag:`Wdeferred-type-errors`
+    Turn type errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implies :ghc-flag:`-fdefer-typed-holes`. See also :ghc-flag:`-Wdeferred-type-errors`
 
 ``-fdefer-typed-holes``
-    Convert :ref:`typed hole <typed-holes>` errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implied by :ghc-flag:`fdefer-type-errors`. See also :ghc-flag:`Wtyped-holes`.
+    Convert :ref:`typed hole <typed-holes>` errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implied by :ghc-flag:`-fdefer-type-errors`. See also :ghc-flag:`-Wtyped-holes`.
 
 ``-fhelpful-errors``
     Make suggestions for mis-spelled names.
@@ -1542,7 +1554,7 @@ Warnings
     warn if promoted constructors are not ticked
 
 ``-Wunused-binds``
-    warn about bindings that are unused. Alias for :ghc-flag:`Wunused-top-binds`, :ghc-flag:`Wunused-local-binds` and :ghc-flag:`Wunused-pattern-binds`
+    warn about bindings that are unused. Alias for :ghc-flag:`-Wunused-top-binds`, :ghc-flag:`-Wunused-local-binds` and :ghc-flag:`-Wunused-pattern-binds`
 
 ``-Wunused-top-binds``
     warn about top-level bindings that are unused
@@ -1572,13 +1584,13 @@ Warnings
     warn about do bindings that appear to throw away monadic values that you should have bound instead
 
 ``-Wunsafe``
-    warn if the module being compiled is regarded to be unsafe. Should be used to check the safety status of modules when using safe inference. Works on all module types, even those using explicit :ref:`Safe Haskell <safe-haskell>` modes (such as :ghc-flag:`XTrustworthy`) and so can be used to have the compiler check any assumptions made.
+    warn if the module being compiled is regarded to be unsafe. Should be used to check the safety status of modules when using safe inference. Works on all module types, even those using explicit :ref:`Safe Haskell <safe-haskell>` modes (such as :ghc-flag:`-XTrustworthy`) and so can be used to have the compiler check any assumptions made.
 
 ``-Wsafe``
-    warn if the module being compiled is regarded to be safe. Should be used to check the safety status of modules when using safe inference. Works on all module types, even those using explicit :ref:`Safe Haskell <safe-haskell>` modes (such as :ghc-flag:`XTrustworthy`) and so can be used to have the compiler check any assumptions made.
+    warn if the module being compiled is regarded to be safe. Should be used to check the safety status of modules when using safe inference. Works on all module types, even those using explicit :ref:`Safe Haskell <safe-haskell>` modes (such as :ghc-flag:`-XTrustworthy`) and so can be used to have the compiler check any assumptions made.
 
 ``-Wtrustworthy-safe``
-    warn if the module being compiled is marked as :ghc-flag:`XTrustworthy` but it could instead be marked as :ghc-flag:`XSafe`, a more informative bound. Can be used to detectonce a Safe Haskell bound can be improved as dependencies are updated.
+    warn if the module being compiled is marked as :ghc-flag:`-XTrustworthy` but it could instead be marked as :ghc-flag:`-XSafe`, a more informative bound. Can be used to detectonce a Safe Haskell bound can be improved as dependencies are updated.
 
 ``-Wwarnings-deprecations``
     warn about uses of functions & types that have warnings or deprecated pragmas
@@ -1590,13 +1602,13 @@ Warnings
     Have the compiler warn about redundant constraints in typesignatures.
 
 ``-Wdeferred-type-errors``
-    Report warnings when :ref:`deferred type errors <defer-type-errors>` are enabled. This option is enabled by default. See :ghc-flag:`fdefer-type-errors`.
+    Report warnings when :ref:`deferred type errors <defer-type-errors>` are enabled. This option is enabled by default. See :ghc-flag:`-fdefer-type-errors`.
 
 ``-Wtyped-holes``
-    Report warnings when :ref:`typed hole <typed-holes>` errors are :ref:`deferred until runtime <defer-type-errors>`. See :ghc-flag:`fdefer-typed-holes`.
+    Report warnings when :ref:`typed hole <typed-holes>` errors are :ref:`deferred until runtime <defer-type-errors>`. See :ghc-flag:`-fdefer-typed-holes`.
 
 ``-Wpartial-type-signatures``
-    warn about holes in partial type signatures when :ghc-flag:`XPartialTypeSignatures` is enabled. Not applicable when :ghc-flag:`XPartialTypesignatures` is not enabled, in which case errors are generated for such holes. See :ref:`partial-type-signatures`.
+    warn about holes in partial type signatures when :ghc-flag:`-XPartialTypeSignatures` is enabled. Not applicable when :ghc-flag:`-XPartialTypesignatures` is not enabled, in which case errors are generated for such holes. See :ref:`partial-type-signatures`.
 
 ``-Wderiving-typeable``
     warn when encountering a request to derive an instance of class ``Typeable``. As of GHC 7.10, such declarations are unnecessary and are ignored by the compiler because GHC has a custom solver for discharging this type of constraint.

@@ -259,6 +259,83 @@ There are some restrictions on the use of unboxed tuples:
 
    Indeed, the bindings can even be recursive.
 
+.. _unboxed-sums:
+
+Unboxed sums
+------------
+
+.. ghc-flag:: -XUnboxedSums
+
+    Enable the use of unboxed sum syntax.
+
+`-XUnboxedSums` enables new syntax for anonymous, unboxed sum types. The syntax
+for an unboxed sum type with N alternatives is ::
+
+    (# t_1 | t_2 | ... | t_N #)
+
+where `t_1` ... `t_N` are types (which can be unlifted, including unboxed tuple
+and sums).
+
+Unboxed tuples can be used for multi-arity alternatives. For example: ::
+
+    (# (# Int, String #) | Bool #)
+
+Term level syntax is similar. Leading and preceding bars (`|`) indicate which
+alternative it is. Here is two terms of the type shown above: ::
+
+    (# (# 1, "foo" #) | #) -- first alternative
+
+    (# | True #) -- second alternative
+
+Pattern syntax reflects the term syntax: ::
+
+    case x of
+      (# (# i, str #) | #) -> ...
+      (# | bool #) -> ...
+
+Unboxed sums are "unboxed" in the sense that, instead of allocating sums in the
+heap and representing values as pointers, unboxed sums are represented as their
+components, just like unboxed tuples. These "components" depend on alternatives
+of a sum type. Code generator tries to generate as compact layout as possible.
+In the best case, size of an unboxed sum is size of its biggest alternative +
+one word (for tag). The algorithm for generating memory layout for a sum type
+works like this:
+
+- All types are classified as one of these classes: 32bit word, 64bit word,
+  32bit float, 64bit float, pointer.
+
+- For each alternative of the sum type, a layout that consists of these fields
+  is generated. For example, if an alternative has `Int`, `Float#` and `String`
+  fields, the layout will have an 32bit word, 32bit float and pointer fields.
+
+- Layout fields are then overlapped so that the final layout will be as compact
+  as possible. E.g. say two alternatives have these fields: ::
+
+    Word32, String, Float#
+    Float#, Float#, Maybe Int
+
+  Final layout will be something like ::
+
+    Int32, Float32, Float32, Word32, Pointer
+
+  First `Int32` is for the tag. It has two `Float32` fields because floating
+  point types can't overlap with other types, because of limitations of the code
+  generator that we're hoping to overcome in the future, and second alternative
+  needs two `Float32` fields. `Word32` field is for the `Word32` in the first
+  alternative. `Pointer` field is shared between `String` and `Maybe Int` values
+  of the alternatives.
+
+  In the case of enumeration types (like `Bool`), the unboxed sum layout only
+  has an `Int32` field (i.e. the whole thing is represented by an integer).
+
+In the example above, a value of this type is thus represented as 5 values. As
+an another example, this is the layout for unboxed version of `Maybe a` type: ::
+
+    Int32, Pointer
+
+The `Pointer` field is not used when tag says that it's `Nothing`. Otherwise
+`Pointer` points to the value in `Just`.
+
 .. _syntax-extns:
 
 Syntactic extensions
@@ -278,34 +355,38 @@ The language extension :ghc-flag:`-XUnicodeSyntax` enables
 Unicode characters to be used to stand for certain ASCII character
 sequences. The following alternatives are provided:
 
-+--------------+---------------+-------------+--------------------------------+
-| ASCII        | Unicode       | Code point  | Name                           |
-|              | alternative   |             |                                |
-+==============+===============+=============+================================+
-| ``::``       | ∷             | 0x2237      | PROPORTION                     |
-+--------------+---------------+-------------+--------------------------------+
-| ``=>``       | ⇒             | 0x21D2      | RIGHTWARDS DOUBLE ARROW        |
-+--------------+---------------+-------------+--------------------------------+
-| ``->``       | →             | 0x2192      | RIGHTWARDS ARROW               |
-+--------------+---------------+-------------+--------------------------------+
-| ``<-``       | ←             | 0x2190      | LEFTWARDS ARROW                |
-+--------------+---------------+-------------+--------------------------------+
-| ``>-``       | ⤚             | 0x291a      | RIGHTWARDS ARROW-TAIL          |
-+--------------+---------------+-------------+--------------------------------+
-| ``-<``       | ⤙             | 0x2919      | LEFTWARDS ARROW-TAIL           |
-+--------------+---------------+-------------+--------------------------------+
-| ``>>-``      | ⤜             | 0x291C      | RIGHTWARDS DOUBLE ARROW-TAIL   |
-+--------------+---------------+-------------+--------------------------------+
-| ``-<<``      | ⤛             | 0x291B      | LEFTWARDS DOUBLE ARROW-TAIL    |
-+--------------+---------------+-------------+--------------------------------+
-| ``*``        | ★             | 0x2605      | BLACK STAR                     |
-+--------------+---------------+-------------+--------------------------------+
-| ``forall``   | ∀             | 0x2200      | FOR ALL                        |
-+--------------+---------------+-------------+--------------------------------+
-| ``(|``       | ⦇             | 0x2987      | Z NOTATION LEFT IMAGE BRACKET  |
-+--------------+---------------+-------------+--------------------------------+
-| ``|)``       | ⦈             | 0x2988      | Z NOTATION RIGHT IMAGE BRACKET |
-+--------------+---------------+-------------+--------------------------------+
++--------------+---------------+-------------+-----------------------------------------+
+| ASCII        | Unicode       | Code point  | Name                                    |
+|              | alternative   |             |                                         |
++==============+===============+=============+=========================================+
+| ``::``       | ∷             | 0x2237      | PROPORTION                              |
++--------------+---------------+-------------+-----------------------------------------+
+| ``=>``       | ⇒             | 0x21D2      | RIGHTWARDS DOUBLE ARROW                 |
++--------------+---------------+-------------+-----------------------------------------+
+| ``->``       | →             | 0x2192      | RIGHTWARDS ARROW                        |
++--------------+---------------+-------------+-----------------------------------------+
+| ``<-``       | ←             | 0x2190      | LEFTWARDS ARROW                         |
++--------------+---------------+-------------+-----------------------------------------+
+| ``>-``       | ⤚             | 0x291a      | RIGHTWARDS ARROW-TAIL                   |
++--------------+---------------+-------------+-----------------------------------------+
+| ``-<``       | ⤙             | 0x2919      | LEFTWARDS ARROW-TAIL                    |
++--------------+---------------+-------------+-----------------------------------------+
+| ``>>-``      | ⤜             | 0x291C      | RIGHTWARDS DOUBLE ARROW-TAIL            |
++--------------+---------------+-------------+-----------------------------------------+
+| ``-<<``      | ⤛             | 0x291B      | LEFTWARDS DOUBLE ARROW-TAIL             |
++--------------+---------------+-------------+-----------------------------------------+
+| ``*``        | ★             | 0x2605      | BLACK STAR                              |
++--------------+---------------+-------------+-----------------------------------------+
+| ``forall``   | ∀             | 0x2200      | FOR ALL                                 |
++--------------+---------------+-------------+-----------------------------------------+
+| ``(|``       | ⦇             | 0x2987      | Z NOTATION LEFT IMAGE BRACKET           |
++--------------+---------------+-------------+-----------------------------------------+
+| ``|)``       | ⦈             | 0x2988      | Z NOTATION RIGHT IMAGE BRACKET          |
++--------------+---------------+-------------+-----------------------------------------+
+| ``[|``       | ⟦             | 0x27E6      | MATHEMATICAL LEFT WHITE SQUARE BRACKET  |
++--------------+---------------+-------------+-----------------------------------------+
+| ``|]``       | ⟧             | 0x27E7      | MATHEMATICAL RIGHT WHITE SQUARE BRACKET |
++--------------+---------------+-------------+-----------------------------------------+
 
 .. _magic-hash:
 
@@ -413,103 +494,13 @@ instance, the binary integer literal ``0b11001001`` will be desugared into
 Pattern guards
 --------------
 
-.. ghc-flag:: -XPatternGuards
+.. ghc-flag:: -XNoPatternGuards
 
-   Enable pattern matches in guards.
+    :implied by: :ghc-flag:`-XHaskell98`
+    :since: 6.8.1
 
-The discussion that follows is an abbreviated version of Simon Peyton Jones's
-original `proposal
-<http://research.microsoft.com/~simonpj/Haskell/guards.html>`__. (Note that the
-proposal was written before pattern guards were implemented, so refers to them
-as unimplemented.)
-
-Suppose we have an abstract data type of finite maps, with a lookup
-operation: ::
-
-    lookup :: FiniteMap -> Int -> Maybe Int
-
-The lookup returns ``Nothing`` if the supplied key is not in the domain
-of the mapping, and ``(Just v)`` otherwise, where ``v`` is the value
-that the key maps to. Now consider the following definition: ::
-
-  clunky env var1 var2
-      | ok1 && ok2 = val1 + val2
-      | otherwise  = var1 + var2
-      where
-        m1 = lookup env var1
-        m2 = lookup env var2
-        ok1 = maybeToBool m1
-        ok2 = maybeToBool m2
-        val1 = expectJust m1
-        val2 = expectJust m2
-
-The auxiliary functions are ::
-
-    maybeToBool :: Maybe a -> Bool
-    maybeToBool (Just x) = True
-    maybeToBool Nothing  = False
-
-    expectJust :: Maybe a -> a
-    expectJust (Just x) = x
-    expectJust Nothing  = error "Unexpected Nothing"
-
-What is ``clunky`` doing? The guard ``ok1 && ok2`` checks that both
-lookups succeed, using ``maybeToBool`` to convert the ``Maybe`` types to
-booleans. The (lazily evaluated) ``expectJust`` calls extract the values
-from the results of the lookups, and binds the returned values to
-``val1`` and ``val2`` respectively. If either lookup fails, then clunky
-takes the ``otherwise`` case and returns the sum of its arguments.
-
-This is certainly legal Haskell, but it is a tremendously verbose and
-un-obvious way to achieve the desired effect. Arguably, a more direct
-way to write clunky would be to use case expressions: ::
-
-    clunky env var1 var2 = case lookup env var1 of
-      Nothing -> fail
-      Just val1 -> case lookup env var2 of
-        Nothing -> fail
-        Just val2 -> val1 + val2
-    where
-      fail = var1 + var2
-
-This is a bit shorter, but hardly better. Of course, we can rewrite any
-set of pattern-matching, guarded equations as case expressions; that is
-precisely what the compiler does when compiling equations! The reason
-that Haskell provides guarded equations is because they allow us to
-write down the cases we want to consider, one at a time, independently
-of each other. This structure is hidden in the case version. Two of the
-right-hand sides are really the same (``fail``), and the whole
-expression tends to become more and more indented.
-
-Here is how I would write ``clunky``: ::
-
-    clunky env var1 var2
-      | Just val1 <- lookup env var1
-      , Just val2 <- lookup env var2
-      = val1 + val2
-    ...other equations for clunky...
-
-The semantics should be clear enough. The qualifiers are matched in
-order. For a ``<-`` qualifier, which I call a pattern guard, the right
-hand side is evaluated and matched against the pattern on the left. If
-the match fails then the whole guard fails and the next equation is
-tried. If it succeeds, then the appropriate binding takes place, and the
-next qualifier is matched, in the augmented environment. Unlike list
-comprehensions, however, the type of the expression to the right of the
-``<-`` is the same as the type of the pattern to its left. The bindings
-introduced by pattern guards scope over all the remaining guard
-qualifiers, and over the right hand side of the equation.
-
-Just as with list comprehensions, boolean expressions can be freely
-mixed with among the pattern guards. For example: ::
-
-    f x | [y] <- x
-        , y > 3
-        , Just z <- h y
-        = ...
-
-Haskell's current guards therefore emerge as a special case, in which
-the qualifier list has just one element, a boolean expression.
+Disable `pattern guards
+<http://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-460003.13>`__.
 
 .. _view-patterns:
 
@@ -656,6 +647,7 @@ n+k patterns
 
 .. ghc-flag:: -XNPlusKPatterns
 
+    :implied by: :ghc-flag:`-XHaskell98`
     :since: 6.12
 
     Enable use of ``n+k`` patterns.
@@ -717,9 +709,9 @@ As you can guess ``justOnes`` will evaluate to ``Just [-1,-1,-1,...``.
 
 GHC's implementation the mdo-notation closely follows the original
 translation as described in the paper `A recursive do for
-Haskell <https://sites.google.com/site/leventerkok/recdo.pdf>`__, which
+Haskell <http://leventerkok.github.io/papers/recdo.pdf>`__, which
 in turn is based on the work `Value Recursion in Monadic
-Computations <http://sites.google.com/site/leventerkok/erkok-thesis.pdf>`__.
+Computations <http://leventerkok.github.io/papers/erkok-thesis.pdf>`__.
 Furthermore, GHC extends the syntax described in the former paper with a
 lower level syntax flagged by the ``rec`` keyword, as we describe next.
 
@@ -780,7 +772,7 @@ can be rather delicate: in particular, we would like the knots to be
 wrapped around as minimal groups as possible. This process is known as
 *segmentation*, and is described in detail in Section 3.2 of `A
 recursive do for
-Haskell <https://sites.google.com/site/leventerkok/recdo.pdf>`__.
+Haskell <http://leventerkok.github.io/papers/recdo.pdf>`__.
 Segmentation improves polymorphism and reduces the size of the recursive
 knot. Most importantly, it avoids unnecessary interference caused by a
 fundamental issue with the so-called *right-shrinking* axiom for monadic
@@ -789,7 +781,7 @@ recursion. In brief, most monads of interest (IO, strict state, etc.) do
 performing segmentation can cause unnecessary interference, changing the
 termination behavior of the resulting translation. (Details can be found
 in Sections 3.1 and 7.2.2 of `Value Recursion in Monadic
-Computations <http://sites.google.com/site/leventerkok/erkok-thesis.pdf>`__.)
+Computations <http://leventerkok.github.io/papers/erkok-thesis.pdf>`__.)
 
 The ``mdo`` notation removes the burden of placing explicit ``rec``
 blocks in the code. Unlike an ordinary ``do`` expression, in which
@@ -943,10 +935,21 @@ then the expression will only require ``Applicative``. Otherwise, the expression
 will require ``Monad``. The block may return a pure expression ``E`` depending
 upon the results ``p1...pn`` with either ``return`` or ``pure``.
 
-Note: the final statement really must be of the form ``return E`` or
-``pure E``, otherwise you get a ``Monad`` constraint.  In particular,
-``return $ E`` is not of the form ``return E``, and will therefore
-incur a ``Monad`` constraint.
+Note: the final statement must match one of these patterns exactly:
+
+- ``return E``
+- ``return $ E``
+- ``pure E``
+- ``pure $ E``
+
+otherwise GHC cannot recognise it as a ``return`` statement, and the
+transformation to use ``<$>`` that we saw above does not apply.  In
+particular, slight variations such as ``return . Just $ x`` or ``let x
+= e in return x`` would not be recognised.
+
+If the final statement is not of one of these forms, GHC falls back to
+standard ``do`` desugaring, and the expression will require a
+``Monad`` constraint.
 
 When the statements of a ``do`` expression have dependencies between
 them, and ``ApplicativeDo`` cannot infer an ``Applicative`` type, it
@@ -3127,8 +3130,10 @@ More details:
       unqualified).
 
    -  In the case of expressions (but not patterns), the variable ``f``
-      is in scope unqualified, apart from the binding of the record
-      selector itself.
+      is in scope unqualified, and is not imported or bound at top level.
+      For example, ``f`` can be bound by an enclosing pattern match or
+      let/where-binding.  (The motivation here is that it should be
+      easy for the reader to figure out what the "``..``" expands to.)
 
    These rules restrict record wildcards to the situations in which the
    user could have written the expanded version. For example ::
@@ -3810,16 +3815,26 @@ Generalising the deriving clause
 GHC now permits such instances to be derived instead, using the flag
 :ghc-flag:`-XGeneralizedNewtypeDeriving`, so one can write ::
 
-      newtype Dollars = Dollars Int deriving (Eq,Show,Num)
+      newtype Dollars = Dollars { getDollars :: Int } deriving (Eq,Show,Num)
 
 and the implementation uses the *same* ``Num`` dictionary for
-``Dollars`` as for ``Int``. Notionally, the compiler derives an instance
-declaration of the form ::
+``Dollars`` as for ``Int``. In other words, GHC will generate something that
+resembles the following code ::
 
       instance Num Int => Num Dollars
 
-which just adds or removes the ``newtype`` constructor according to the
-type.
+and then attempt to simplify the ``Num Int`` context as much as possible.
+GHC knows that there is a ``Num Int`` instance in scope, so it is able to
+discharge the ``Num Int`` constraint, leaving the code that GHC actually
+generates ::
+
+      instance Num Dollars
+
+One can think of this instance being implementated with the same code as the
+``Num Int`` instance, but with ``Dollars`` and ``getDollars`` added wherever
+necessary in order to make it typecheck. (In practice, GHC uses a somewhat
+different approach to code generation. See the :ref:`precise-gnd-specification`
+section below for more details.)
 
 We can also derive instances of constructor classes in a similar way.
 For example, suppose we have implemented state and failure monad
@@ -3871,6 +3886,8 @@ As a result of this extension, all derived instances in newtype
 declarations are treated uniformly (and implemented just by reusing the
 dictionary for the representation type), *except* ``Show`` and ``Read``,
 which really behave differently for the newtype and its representation.
+
+.. _precise-gnd-specification:
 
 A more precise specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4306,7 +4323,7 @@ all currently bundled constructors. For example, we could write: ::
 in which case, ``Example`` would export the type constructor ``MyNum`` with
 the data constructor ``MkNum`` and also the pattern synonym ``Zero``.
 
-Bundled patterns synonyms are type checked to ensure that they are of the same
+Bundled pattern synonyms are type checked to ensure that they are of the same
 type as the type constructor which they are bundled with. A pattern synonym
 ``P`` can not be bundled with a type constructor ``T`` if ``P``\'s type is visibly
 incompatible with ``T``.
@@ -4315,6 +4332,9 @@ A module which imports ``MyNum(..)`` from ``Example`` and then re-exports
 ``MyNum(..)`` will also export any pattern synonyms bundled with ``MyNum`` in
 ``Example``. A more complete specification can be found on the
 :ghc-wiki:`wiki. <PatternSynonyms/AssociatingSynonyms>`
+
+
+.. _patsyn-typing:
 
 Typing of pattern synonyms
 --------------------------
@@ -4375,13 +4395,18 @@ Note also the following points
 -  You may specify an explicit *pattern signature*, as we did for
    ``ExNumPat`` above, to specify the type of a pattern, just as you can
    for a function. As usual, the type signature can be less polymorphic
-   than the inferred type. For example
-
-   ::
+   than the inferred type. For example ::
 
          -- Inferred type would be 'a -> [a]'
          pattern SinglePair :: (a, a) -> [(a, a)]
          pattern SinglePair x = [x]
+
+   Just like signatures on value-level bindings, pattern synonym signatures can
+   apply to more than one pattern. For instance, ::
+
+         pattern Left', Right' :: a -> Either a a
+         pattern Left' x  = Left x
+         pattern Right' x = Right x
 
 -  The GHCi :ghci-cmd:`:info` command shows pattern types in this format.
 
@@ -9312,7 +9337,7 @@ Impredicative polymorphism
 
 .. ghc-flag:: -XImpredicativeTypes
 
-    :implies: :ghc-flag:`RankNTypes`
+    :implies: :ghc-flag:`-RankNTypes`
 
     Allow impredicative polymorphic types.
 
@@ -9574,22 +9599,25 @@ types like ``(Int -> Bool)`` or ``Maybe``.
 For instance, the first wildcard in the type signature ``not'`` would
 produce the following error message:
 
-::
+.. code-block:: none
 
-    Test.hs:4:17:
-        Found hole ‘_’ with type: Bool
-        To use the inferred type, enable PartialTypeSignatures
-        In the type signature for ‘not'’: Bool -> _
+    Test.hs:4:17: error:
+        • Found type wildcard ‘_’ standing for ‘Bool’
+          To use the inferred type, enable PartialTypeSignatures
+        • In the type signature:
+            not' :: Bool -> _
+        • Relevant bindings include
+            not' :: Bool -> Bool (bound at Test.hs:5:1)
+
 
 When a wildcard is not instantiated to a monotype, it will be
-generalised over, i.e. replaced by a fresh type variable (of which the
-name will often start with ``w_``), e.g.
+generalised over, i.e. replaced by a fresh type variable, e.g.
 
 ::
 
     foo :: _ -> _
     foo x = x
-    -- Inferred: forall w_. w_ -> w_
+    -- Inferred: forall t. t -> t
 
     filter' :: _
     filter' = filter -- has type forall a. (a -> Bool) -> [a] -> [a]
@@ -9623,7 +9651,7 @@ of the type signature to make sure that it unifies with something: ::
 
     somethingShowable :: Show _x => _x -> _
     somethingShowable x = show x
-    -- Inferred type: Show w_x => w_x -> String
+    -- Inferred type: Show a => a -> String
 
     somethingShowable' :: Show _x => _x -> _
     somethingShowable' x = show (not x)
@@ -9638,7 +9666,7 @@ though syntactically similar, named wildcards can unify with monotypes
 as well as be generalised over (and behave as type variables).
 
 In the first example above, ``_x`` is generalised over (and is
-effectively replaced by a fresh type variable ``w_x``). In the second
+effectively replaced by a fresh type variable ``a``). In the second
 example, ``_x`` is unified with the ``Bool`` type, and as ``Bool``
 implements the ``Show`` type class, the constraint ``Show Bool`` can be
 simplified away.
@@ -9657,23 +9685,29 @@ no matching the actual type ``Bool``.
 
 .. code-block:: none
 
-    Test.hs:5:9:
-        Couldn't match expected type ‘_a’ with actual type ‘Bool’
+    Test.hs:5:9: error:
+        • Couldn't match expected type ‘_a’ with actual type ‘Bool’
           ‘_a’ is a rigid type variable bound by
-               the type signature for foo :: _a -> _a at Test.hs:4:8
-        Relevant bindings include foo :: _a -> _a (bound at Test.hs:4:1)
-        In the expression: False
-        In an equation for ‘foo’: foo _ = False
+            the type signature for:
+              foo :: forall _a. _a -> _a
+            at Test.hs:4:8
+        • In the expression: False
+          In an equation for ‘foo’: foo _ = False
+        • Relevant bindings include foo :: _a -> _a (bound at Test.hs:5:1)
 
-Compiling this program with :ghc-flag:`-XNamedWildCards` enabled produces the
-following error message reporting the inferred type of the named
-wildcard ``_a``.
+Compiling this program with :ghc-flag:`-XNamedWildCards` (as well as
+:ghc-flag:`-XPartialTypeSignatures`) enabled produces the following error
+message reporting the inferred type of the named wildcard ``_a``.
 
 .. code-block:: none
 
-    Test.hs:4:8: Warning:
-        Found hole ‘_a’ with type: Bool
-        In the type signature for ‘foo’: _a -> _a
+    Test.hs:4:8: warning: [-Wpartial-type-signatures]
+        • Found type wildcard ‘_a’ standing for ‘Bool’
+        • In the type signature:
+            foo :: _a -> _a
+        • Relevant bindings include
+            foo :: Bool -> Bool (bound at Test.hs:5:1)
+
 
 .. _extra-constraints-wildcard:
 
@@ -9693,10 +9727,11 @@ extra-constraints wildcard is used to infer three extra constraints.
     -- Inferred:
     --   forall a. (Enum a, Eq a, Show a) => a -> String
     -- Error:
-    Test.hs:5:12:
-        Found hole ‘_’ with inferred constraints: (Enum a, Eq a, Show a)
+    Test.hs:5:12: error:
+        Found constraint wildcard ‘_’ standing for ‘(Show a, Eq a, Enum a)’
         To use the inferred type, enable PartialTypeSignatures
-        In the type signature for ‘arbitCs’: _ => a -> String
+        In the type signature:
+          arbitCs :: _ => a -> String
 
 An extra-constraints wildcard shouldn't prevent the programmer from
 already listing the constraints he knows or wants to annotate, e.g.
@@ -9709,10 +9744,11 @@ already listing the constraints he knows or wants to annotate, e.g.
     -- Inferred:
     --   forall a. (Enum a, Show a, Eq a) => a -> String
     -- Error:
-    Test.hs:9:22:
-        Found hole ‘_’ with inferred constraints: (Eq a, Show a)
+    Test.hs:9:22: error:
+        Found constraint wildcard ‘_’ standing for ‘()’
         To use the inferred type, enable PartialTypeSignatures
-        In the type signature for ‘arbitCs'’: (Enum a, _) => a -> String
+        In the type signature:
+          arbitCs' :: (Enum a, _) => a -> String
 
 An extra-constraints wildcard can also lead to zero extra constraints to
 be inferred, e.g.
@@ -9723,10 +9759,11 @@ be inferred, e.g.
     noCs = "noCs"
     -- Inferred: String
     -- Error:
-    Test.hs:13:9:
-        Found hole ‘_’ with inferred constraints: ()
+    Test.hs:13:9: error:
+        Found constraint wildcard ‘_’ standing for ‘()’
         To use the inferred type, enable PartialTypeSignatures
-        In the type signature for ‘noCs’: _ => String
+        In the type signature:
+          noCs :: _ => String
 
 As a single extra-constraints wildcard is enough to infer any number of
 constraints, only one is allowed in a type signature and it should come
@@ -9753,6 +9790,11 @@ In the following example a wildcard is used in each of the three possible contex
 Anonymous and named wildcards *can* occur on the left hand side of a
 type or data instance declaration;
 see :ref:`type-wildcards-lhs`.
+
+Anonymous wildcards are also allowed in visible type applications
+(:ref:`visible-type-application`). If you want to specify only the second type
+argument to ``wurble``, then you can say ``wurble @_ @Int`` where the first
+argument is a wildcard.
 
 In all other contexts, type wildcards are disallowed, and a named wildcard is treated
 as an ordinary type variable.  For example: ::
@@ -11436,7 +11478,7 @@ obfuscates matters, so we do not do so here.)
 
 The translation is carefully crafted to make bang patterns meaningful
 for reursive and polymorphic bindings as well as straightforward
-non-recurisve bindings.
+non-recursive bindings.
 
 Here are some examples of how this translation works. The first
 expression of each sequence is Haskell source; the subsequent ones are
