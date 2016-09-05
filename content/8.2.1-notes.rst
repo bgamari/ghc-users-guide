@@ -43,18 +43,12 @@ GHCi
 
 -  TODO FIXME.
 
+- Added :ghc-flag:`-flocal-ghci-history` which uses current directory for `.ghci-history`.
+
 Template Haskell
 ~~~~~~~~~~~~~~~~
 
 -  TODO FIXME.
-
-- ``addModFinalizer`` now exposes the local typing environment at the splice
-  point. This allows ``reify`` to see local and top-level definitions in the
-  current declaration group when used as in
-
-  .. code-block:: none
-
-      f x = $(addModFinalizer (reify 'x >>= runIO . print) >> [| x |])
 
 -  Reifying types that contain unboxed tuples now works correctly. (Previously,
    Template Haskell reified unboxed tuples as boxed tuples with twice their
@@ -111,6 +105,12 @@ See ``changelog.md`` in the ``base`` package for full release notes.
 - ``Data.Type.Coercion`` now provides ``gcoerceWith``, which is analogous to
   ``gcastWith`` from ``Data.Type.Equality``.
 
+- The ``Read1`` and ``Read2`` classes in ``Data.Functor.Classes`` have new
+  methods, ``liftReadList(2)`` and ``liftReadListPrec(2)``, that are defined in
+  terms of ``ReadPrec`` instead of ``ReadS``. This matches the interface
+  provided in GHC's version of the ``Read`` class, and allows users to write
+  more efficient ``Read1`` and ``Read2`` instances.
+
 binary
 ~~~~~~
 
@@ -149,8 +149,7 @@ filepath
 ghc
 ~~~
 
--  TODO FIXME.
-
+-  
 ghc-boot
 ~~~~~~~~
 

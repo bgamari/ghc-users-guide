@@ -37,7 +37,7 @@ Linking options
 
 
 Miscellaneous options
-    ``-jN`` ``-fno-hi-version-check`` ``-fhistory-size`` ``-fno-ghci-history`` ``-fno-ghci-sandbox`` ``-freverse-errors``
+    ``-jN`` ``-fno-hi-version-check`` ``-fhistory-size`` ``-fno-ghci-history`` ``-fno-ghci-sandbox`` ``-freverse-errors`` ``-flocal-ghci-history``
 
 
 Modes of operation
@@ -101,7 +101,7 @@ Verbosity options
 
 
 Warnings
-    ``-W`` ``-w`` ``-Wall`` ``-Wcompat`` ``-Werror`` ``-Wwarn`` ``-Wunrecognised-warning-flags`` ``-fshow-warning-groups`` ``-fdefer-type-errors`` ``-fdefer-typed-holes`` ``-fhelpful-errors`` ``-Wdeprecated-flags`` ``-Wduplicate-constraints`` ``-Wduplicate-exports`` ``-Whi-shadowing`` ``-Widentities`` ``-Wimplicit-prelude`` ``-Wincomplete-patterns`` ``-Wincomplete-uni-patterns`` ``-Wmax-pmcheck-iterations=<N>`` ``-Wincomplete-record-updates`` ``-Wmissing-fields`` ``-Wmissing-import-lists`` ``-Wmissing-methods`` ``-Wmissing-signatures`` ``-Wmissing-exported-sigs`` ``-Wmissing-exported-signatures`` ``-Wmissing-local-sigs`` ``-Wmissing-local-signatures`` ``-Wmissing-monadfail-instances`` ``-Wsemigroup`` ``-Wmissed-specialisations`` ``-Wall-missed-specialisations`` ``-Wmonomorphism-restriction`` ``-Wname-shadowing`` ``-Wnoncanonical-monad-instances`` ``-Wnoncanonical-monadfail-instances`` ``-Wnoncanonical-monoid-instances`` ``-Worphans`` ``-Woverlapping-patterns`` ``-Wtabs`` ``-Wtype-defaults`` ``-Wunrecognised-pragmas`` ``-Wunticked-promoted-constructors`` ``-Wunused-binds`` ``-Wunused-top-binds`` ``-Wunused-local-binds`` ``-Wunused-pattern-binds`` ``-Wunused-imports`` ``-Wunused-matches`` ``-Wunused-foralls`` ``-Wunused-type-variables`` ``-Wunused-do-bind`` ``-Wwrong-do-bind`` ``-Wunsafe`` ``-Wsafe`` ``-Wtrustworthy-safe`` ``-Wwarnings-deprecations`` ``-Wamp`` ``-Wredundant-constraints`` ``-Wdeferred-type-errors`` ``-Wtyped-holes`` ``-Wpartial-type-signatures`` ``-Wderiving-typeable``
+    ``-W`` ``-w`` ``-Wall`` ``-Wcompat`` ``-Werror`` ``-Wwarn`` ``-Wunrecognised-warning-flags`` ``-fshow-warning-groups`` ``-fdefer-type-errors`` ``-fdefer-typed-holes`` ``-fdefer-out-of-scope-variables`` ``-fhelpful-errors`` ``-Wdeprecated-flags`` ``-Wduplicate-constraints`` ``-Wduplicate-exports`` ``-Whi-shadowing`` ``-Widentities`` ``-Wimplicit-prelude`` ``-Wincomplete-patterns`` ``-Wincomplete-uni-patterns`` ``-Wmax-pmcheck-iterations=<N>`` ``-Wincomplete-record-updates`` ``-Wmissing-fields`` ``-Wmissing-import-lists`` ``-Wmissing-methods`` ``-Wmissing-signatures`` ``-Wmissing-exported-sigs`` ``-Wmissing-exported-signatures`` ``-Wmissing-local-sigs`` ``-Wmissing-local-signatures`` ``-Wmissing-monadfail-instances`` ``-Wsemigroup`` ``-Wmissed-specialisations`` ``-Wall-missed-specialisations`` ``-Wmonomorphism-restriction`` ``-Wname-shadowing`` ``-Wnoncanonical-monad-instances`` ``-Wnoncanonical-monadfail-instances`` ``-Wnoncanonical-monoid-instances`` ``-Worphans`` ``-Woverlapping-patterns`` ``-Wtabs`` ``-Wtype-defaults`` ``-Wunrecognised-pragmas`` ``-Wunticked-promoted-constructors`` ``-Wunused-binds`` ``-Wunused-top-binds`` ``-Wunused-local-binds`` ``-Wunused-pattern-binds`` ``-Wunused-imports`` ``-Wunused-matches`` ``-Wunused-foralls`` ``-Wunused-type-variables`` ``-Wunused-do-bind`` ``-Wwrong-do-bind`` ``-Wunsafe`` ``-Wsafe`` ``-Wtrustworthy-safe`` ``-Wwarnings-deprecations`` ``-Wamp`` ``-Wredundant-constraints`` ``-Wdeferred-type-errors`` ``-Wtyped-holes`` ``-Wdeferred-out-of-scope-variables`` ``-Wpartial-type-signatures`` ``-Wderiving-typeable``
 
 
 Code generation
@@ -861,6 +861,9 @@ Miscellaneous options
 ``-freverse-errors``
     Display errors in GHC/GHCi sorted by reverse order of source code line numbers.
 
+``-flocal-ghci-history``
+    Use current directory for the GHCi command history file ``.ghci-history``.
+
 
 Modes of operation
 ~~~~~~~~~~~~~~~~~~
@@ -1446,10 +1449,13 @@ Warnings
     show which group an emitted warning belongs to.
 
 ``-fdefer-type-errors``
-    Turn type errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implies :ghc-flag:`-fdefer-typed-holes`. See also :ghc-flag:`-Wdeferred-type-errors`
+    Turn type errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implies :ghc-flag:`-fdefer-typed-holes` and :ghc-flag:`-fdefer-out-of-scope-variables`. See also :ghc-flag:`-Wdeferred-type-errors`
 
 ``-fdefer-typed-holes``
     Convert :ref:`typed hole <typed-holes>` errors into warnings, :ref:`deferring the error until runtime <defer-type-errors>`. Implied by :ghc-flag:`-fdefer-type-errors`. See also :ghc-flag:`-Wtyped-holes`.
+
+``-fdefer-out-of-scope-variables``
+    Convert variable out of scope variables errors into warnings. Implied by :ghc-flag:`-fdefer-type-errors`. See also :ghc-flag:`-Wdeferred-out-of-scope-variables`.
 
 ``-fhelpful-errors``
     Make suggestions for mis-spelled names.
@@ -1606,6 +1612,9 @@ Warnings
 
 ``-Wtyped-holes``
     Report warnings when :ref:`typed hole <typed-holes>` errors are :ref:`deferred until runtime <defer-type-errors>`. See :ghc-flag:`-fdefer-typed-holes`.
+
+``-Wdeferred-out-of-scope-variables``
+    Report warnings when variable out-of-scope errors are :ref:`deferred until runtime <defer-out-of-scope-variables>`. See :ghc-flag:`-fdefer-out-of-scope-variables`.
 
 ``-Wpartial-type-signatures``
     warn about holes in partial type signatures when :ghc-flag:`-XPartialTypeSignatures` is enabled. Not applicable when :ghc-flag:`-XPartialTypesignatures` is not enabled, in which case errors are generated for such holes. See :ref:`partial-type-signatures`.

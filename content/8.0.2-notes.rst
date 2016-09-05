@@ -25,12 +25,39 @@ Language
 Compiler
 ~~~~~~~~
 
--  TODO FIXME.
+-  The :ghc-flag:`-Wredundant-constraints` flag has been removed from the
+   :ghc-flag:`-Wall` flag set (see :ghc-ticket:`10635`).
 
 -  The :ghc-flag:`-ddump-cmm` now dumps the result after C-- pipeline pass. Two
    more flags were added: :ghc-flag:`-ddump-cmm-from-stg` to allow to get the
    initial cmm from STG-to-C-- code generation and :ghc-flag:`-ddump-cmm-verbose`
    to obtain the intermediates from all C-- pipeline stages.
+
+Runtime system
+~~~~~~~~~~~~~~
+
+- The Runtime linker on Windows is once again recognizing POSIX functions under their
+  "deprecated" name. e.g. "strdup" will now be recognizes and internally forwarded to "_strdup".
+  If you have existing code already using the correct names (e.g. _strdup) then this will just continue
+  to work and no change is needed. For more information about how the forwarding is done please see
+  `MSDN <https://msdn.microsoft.com/en-us/library/ms235384.aspx>`_ . This should now introduce the same behavior
+  both compiled and interpreted. (see :ghc-ticket:`12497`).
+
+-  Added :ghc-flag:`-fdefer-out-of-scope-variables`, which converts variable
+   out of scope variables errors into warnings.
+
+Template Haskell
+~~~~~~~~~~~~~~~~
+
+-  TODO FIXME.
+
+- ``addModFinalizer`` now exposes the local typing environment at the splice
+  point. This allows ``reify`` to see local and top-level definitions in the
+  current declaration group when used as in
+
+  .. code-block:: none
+
+      f x = $(addModFinalizer (reify 'x >>= runIO . print) >> [| x |])
 
 TODO FIXME Heading title
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -50,3 +77,14 @@ TODO FIXME Heading title
 	length :: forall {a} {t :: * -> *}. Foldable t => t a -> Int
 	*X> :type +v length
 	length :: forall (t :: * -> *). Foldable t => forall a. t a -> Int
+
+Libraries
+---------
+
+ghc
+~~~
+
+-  The ``GHC.initGhcMonad`` function no longer installs signal handlers by
+   default. This means that the RTS won't attempt to handle Ctrl-C gracefully.
+   If you would like to use GHC's signal handlers, call
+   ``GHC.installSignalHandlers`` during initialization.
