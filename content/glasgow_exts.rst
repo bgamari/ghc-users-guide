@@ -10082,7 +10082,7 @@ The :ghc-flag:`-XTemplateHaskellQuotes` extension is considered safe under
        add1 :: Int -> Q Exp
        add1 x = [| x + 1 |]
 
-   Now consider a splice using <literal>add1</literal> in a separate
+   Now consider a splice using ``add1`` in a separate
    module: ::
 
        module Foo where
@@ -10276,9 +10276,8 @@ The :ghc-flag:`-XTemplateHaskellQuotes` extension is considered safe under
 
    -  Recursive ``do``-statements (see :ghc-ticket:`1262`)
 
-   -  Pattern synonyms (see :ghc-ticket:`8761`)
-
-   -  Typed holes (see :ghc-ticket:`10267`)
+   -  Type holes in typed splices (see :ghc-ticket:`10945` and
+      :ghc-ticket:`10946`)
 
 (Compared to the original paper, there are many differences of detail.
 The syntax for a declaration splice uses "``$``" not "``splice``". The type of
