@@ -278,6 +278,20 @@ Furthermore, we restrict the following features:
   between types. Derived instances (through the :ghc-flag:`-XDeriveDataTypeable`
   extension) are still allowed.
 
+- ``GHC.Generics`` — Hand crafted instances of the ``Generic`` type class are
+  not allowed in Safe Haskell. Such instances aren't strictly unsafe, but
+  there is an important invariant that a ``Generic`` instance should adhere to
+  the structure of the data type for which the instance is defined, and
+  allowing manually implemented ``Generic`` instances would break that
+  invariant. Derived instances (through the :ghc-flag:`-XDeriveGeneric`
+  extension) are still allowed. Note that the only allowed
+  :ref:`deriving strategy <deriving-strategies>` for deriving ``Generic`` under
+  Safe Haskell is ``stock``, as another strategy (e.g., ``anyclass``) would
+  produce an instance that violates the invariant.
+
+  Refer to the
+  :ref:`generic programming <generic-programming>` section for more details.
+
 .. _safe-overlapping-instances:
 
 Safe Overlapping Instances
