@@ -327,7 +327,7 @@ performance.
 
 .. rts-flag:: -n ⟨size⟩
 
-    :default: 0
+    :default: 4m with ``-A16m`` or larger, otherwise 0.
 
     .. index::
        single: allocation area, chunk size
@@ -467,7 +467,8 @@ performance.
 
 .. rts-flag:: -qn <x>
 
-    :default: the value of ``-N``
+    :default: the value of ``-N`` or the number of CPU cores,
+              whichever is smaller.
     :since: 8.2.1
 
     .. index::

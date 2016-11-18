@@ -1460,6 +1460,33 @@ Be warned: this is an experimental facility, with fewer checks than
 usual. Use ``-dcore-lint`` to typecheck the desugared program. If Core
 Lint is happy you should be all right.
 
+Things unaffected by :ghc-flag:`-XRebindableSyntax`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:ghc-flag:`-XRebindableSyntax` does not apply to any code generated from a
+``deriving`` clause or declaration. To see why, consider the following code: ::
+
+    {-# LANGUAGE RebindableSyntax, OverloadedStrings #-}
+    newtype Text = Text String
+
+    fromString :: String -> Text
+    fromString = Text
+
+    data Foo = Foo deriving Show
+
+This will generate code to the effect of: ::
+
+    instance Show Foo where
+      showsPrec _ Foo = showString "Foo"
+
+But because :ghc-flag:`-XRebindableSyntax` and :ghc-flag:`-XOverloadedStrings`
+are enabled, the ``"Foo"`` string literal would now be of type ``Text``, not
+``String``, which ``showString`` doesn't accept! This causes the generated
+``Show`` instance to fail to typecheck. It's hard to imagine any scenario where
+it would be desirable have :ghc-flag:`-XRebindableSyntax` behavior within
+derived code, so GHC simply ignores :ghc-flag:`-XRebindableSyntax` entirely
+when checking derived code.
+
 .. _postfix-operators:
 
 Postfix operators
@@ -1588,7 +1615,7 @@ has no non-bottom values. For example:
       f :: Void -> Int
       f x = case x of { }
 
-With dependently-typed features it is more useful (see :ghc-ticket:`2431``). For
+With dependently-typed features it is more useful (see :ghc-ticket:`2431`). For
 example, consider these two candidate definitions of ``absurd``:
 
 ::
@@ -2117,10 +2144,10 @@ much more liberal about type synonyms than Haskell 98.
          foo :: forall x. x -> [x]
 
 GHC currently does kind checking before expanding synonyms (though even
-that could be changed)..
+that could be changed).
 
 After expanding type synonyms, GHC does validity checking on types,
-looking for the following mal-formedness which isn't detected simply by
+looking for the following malformedness which isn't detected simply by
 kind checking:
 
 -  Type constructor applied to a type involving for-alls (if
@@ -3267,6 +3294,17 @@ number of important ways:
    necessarily more conservative, but any error message may be more
    comprehensible.
 
+-  Under most circumstances, you cannot use standalone deriving to create an
+   instance for a data type whose constructors are not all in scope. This is
+   because the derived instance would generate code that uses the constructors
+   behind the scenes, which would break abstraction.
+
+   The one exception to this rule is :ghc-flag:`-XDeriveAnyClass`, since
+   deriving an instance via :ghc-flag:`-XDeriveAnyClass` simply generates
+   an empty instance declaration, which does not require the use of any
+   constructors. See the `deriving any class <#derive-any-class>`__ section
+   for more details.
+
 In other ways, however, a standalone deriving obeys the same rules as
 ordinary deriving:
 
@@ -3925,9 +3963,18 @@ where
    missing last argument to ``C`` is not used at a nominal role in any
    of the ``C``'s methods. (See :ref:`roles`.)
 
+- ``C`` is allowed to have associated type families, provided they meet the
+  requirements laid out in the section on :ref:`GND and associated types
+  <gnd-and-associated-types>`.
+
 Then the derived instance declaration is of the form ::
 
       instance C t1..tj t => C t1..tj (T v1...vk)
+
+Note that if ``C`` does not contain any class methods, the instance context
+is wholly unnecessary, and as such GHC will instead generate: ::
+
+      instance C t1..tj (T v1..vk)
 
 As an example which does *not* work, consider ::
 
@@ -3959,6 +4006,133 @@ Lastly, all of this applies only for classes other than ``Read``,
 applies (section 4.3.3. of the Haskell Report). (For the standard
 classes ``Eq``, ``Ord``, ``Ix``, and ``Bounded`` it is immaterial
 whether the stock method is used or the one described here.)
+
+.. _gnd-and-associated-types:
+
+Associated type families
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+:ghc-flag:`-XGeneralizedNewtypeDeriving` also works for some type classes with
+associated type families. Here is an example: ::
+
+      class HasRing a where
+        type Ring a
+
+      newtype L1Norm a = L1Norm a
+        deriving HasRing
+
+The derived ``HasRing`` instance would look like ::
+
+      instance HasRing (L1Norm a) where
+        type Ring (L1Norm a) = Ring a
+
+To be precise, if the class being derived is of the form ::
+
+      class C c_1 c_2 ... c_m where
+        type T1 t1_1 t1_2 ... t1_n
+        ...
+        type Tk tk_1 tk_2 ... tk_p
+
+and the newtype is of the form ::
+
+      newtype N n_1 n_2 ... n_q = MkN <rep-type>
+
+then you can derive a ``C c_1 c_2 ... c_(m-1)`` instance for
+``N n_1 n_2 ... n_q``, provided that:
+
+- The type parameter ``c_m`` occurs once in each of the type variables of
+  ``T1`` through ``Tk``. Imagine a class where this condition didn't hold.
+  For example: ::
+
+      class Bad a b where
+        type B a
+
+      instance Bad Int a where
+        type B Int = Char
+
+      newtype Foo a = Foo a
+        deriving (Bad Int)
+
+  For the derived ``Bad Int`` instance, GHC would need to generate something
+  like this: ::
+
+      instance Bad Int (Foo a) where
+        type B Int = B ???
+
+  Now we're stuck, since we have no way to refer to ``a`` on the right-hand
+  side of the ``B`` family instance, so this instance doesn't really make sense
+  in a :ghc-flag:`-XGeneralizedNewtypeDeriving` setting.
+
+- ``C`` does not have any associated data families (only type families). To
+  see why data families are forbidden, imagine the following scenario: ::
+
+      class Ex a where
+        data D a
+
+      instance Ex Int where
+        data D Int = DInt Bool
+
+      newtype Age = MkAge Int deriving Ex
+
+  For the derived ``Ex`` instance, GHC would need to generate something like
+  this: ::
+
+      instance Ex Age where
+        data D Age = ???
+
+  But it is not clear what GHC would fill in for ``???``, as each data family
+  instance must generate fresh data constructors.
+
+If both of these conditions are met, GHC will generate this instance: ::
+
+      instance C c_1 c_2 ... c_(m-1) <rep-type> =>
+               C c_1 c_2 ... c_(m-1) (N n_1 n_2 ... n_q) where
+        type T1 t1_1 t1_2 ... (N n_1 n_2 ... n_q) ... t1_n
+           = T1 t1_1 t1_2 ... <rep-type>          ... t1_n
+        ...
+        type Tk tk_1 tk_2 ... (N n_1 n_2 ... n_q) ... tk_p
+           = Tk tk_1 tk_2 ... <rep-type>          ... tk_p
+
+Again, if ``C`` contains no class methods, the instance context will be
+redundant, so GHC will instead generate
+``instance C c_1 c_2 ... c_(m-1) (N n_1 n_2 ... n_q)``.
+
+Beware that in some cases, you may need to enable the
+:ghc-flag:`-XUndecidableInstances` extension in order to use this feature.
+Here's a pathological case that illustrates why this might happen: ::
+
+      class C a where
+        type T a
+
+      newtype Loop = MkLoop Loop
+        deriving C
+
+This will generate the derived instance: ::
+
+      instance C Loop where
+        type T Loop = T Loop
+
+Here, it is evident that attempting to use the type ``T Loop`` will throw the
+typechecker into an infinite loop, as its definition recurses endlessly. In
+other cases, you might need to enable :ghc-flag:`-XUndecidableInstances` even
+if the generated code won't put the typechecker into a loop. For example: ::
+
+      instance C Int where
+        type C Int = Int
+
+      newtype MyInt = MyInt Int
+        deriving C
+
+This will generate the derived instance: ::
+
+      instance C MyInt where
+        type T MyInt = T Int
+
+Although typechecking ``T MyInt`` will terminate, GHC's termination checker
+isn't sophisticated enough to determine this, so you'll need to enable
+:ghc-flag:`-XUndecidableInstances` in order to use this derived instance. If
+you do go down this route, make sure you can convince yourself that all of
+the type family instances you're deriving will eventually terminate if used!
 
 .. _derive-any-class:
 
@@ -9319,13 +9493,13 @@ your ``forall``\s explicitly. Indeed, doing so is strongly advised for
 rank-2 types.
 
 Sometimes there *is* no "outermost level", in which case no
-implicit quanification happens: ::
+implicit quantification happens: ::
 
       data PackMap a b s t = PackMap (Monad f => (a -> f b) -> s -> f t)
 
 This is rejected because there is no "outermost level" for the types on the RHS
 (it would obviously be terrible to add extra parameters to ``PackMap``),
-so no implicit quantificaiton happens, and the declaration is rejected
+so no implicit quantification happens, and the declaration is rejected
 (with "``f`` is out of scope").  Solution: use an explicit ``forall``: ::
 
       data PackMap a b s t = PackMap (forall f. Monad f => (a -> f b) -> s -> f t)
@@ -9832,9 +10006,14 @@ splices.
 -  Typed expression splices: the same wildcards as in (untyped)
    expression splices are supported.
 
--  Pattern splices: Template Haskell doesn't support type signatures in
-   pattern splices. Consequently, partial type signatures are not
-   supported either.
+-  Pattern splices: anonymous and named wildcards can be used in pattern
+   signatures. Note that :ghc-flag:`-XScopedTypeVariables` has to be enabled
+   to allow pattern signatures. Extra-constraints wildcards are not supported,
+   just like in regular pattern signatures.
+   ::
+
+       {-# LANGUAGE TemplateHaskell, ScopedTypeVariables #-}
+       foo $( [p| (x :: _) |] ) = x
 
 -  Type splices: only anonymous wildcards are supported in type splices.
    Named and extra-constraints wildcards are not. ::
@@ -11411,7 +11590,7 @@ optionally had by adding ``!`` in front of a variable.
    In ordinary Haskell, ``f`` is lazy in its argument and hence in
    ``x``; and ``g`` is strict in its argument and hence also strict in
    ``x``. With ``Strict``, both become strict because ``f``'s argument
-   gets an implict bang.
+   gets an implicit bang.
 
 
 .. _strict-modularity:

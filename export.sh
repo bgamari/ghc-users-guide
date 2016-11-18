@@ -17,5 +17,6 @@ cp -R $GHC_TREE/docs/users_guide/images .
 #cp -R $GHC_TREE/docs/users_guide/ghc-theme content
 echo "html_theme = 'sphinx_rtd_theme'" >> content/conf.py
 
+commit=$(git -C $GHC_TREE rev-parse HEAD)
 git add content ghc_config.py images
-git commit -m "update" -a
+git commit -m "update to $commit" -a

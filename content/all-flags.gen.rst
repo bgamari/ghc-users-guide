@@ -97,7 +97,7 @@ Temporary files
 
 
 Verbosity options
-    ``-v`` ``-v⟨n⟩`` ``-fprint-potential-instances`` ``-fprint-explicit-foralls`` ``-fprint-explicit-kinds`` ``-fprint-explicit-runtime-reps`` ``-fprint-unicode-syntax`` ``-fprint-expanded-synonyms`` ``-fprint-typechecker-elaboration`` ``-ferror-spans`` ``-Rghc-timing``
+    ``-v`` ``-v⟨n⟩`` ``-fshow-source-paths`` ``-fprint-potential-instances`` ``-fprint-explicit-foralls`` ``-fprint-explicit-kinds`` ``-fprint-explicit-runtime-reps`` ``-fprint-unicode-syntax`` ``-fprint-expanded-synonyms`` ``-fprint-typechecker-elaboration`` ``-ferror-spans`` ``-Rghc-timing``
 
 
 Warnings
@@ -1391,6 +1391,9 @@ Verbosity options
 
 ``-v⟨n⟩``
     set verbosity level
+
+``-fshow-source-paths``
+    show module source and object paths
 
 ``-fprint-potential-instances``
     display all available instances in type error messages

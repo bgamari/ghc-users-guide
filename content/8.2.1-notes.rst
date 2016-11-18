@@ -42,6 +42,61 @@ Compiler
   class instance using the :ghc-flag:`-XDerivingStrategies` language extension
   (see :ref:`deriving-strategies`).
 
+- GHC now allows standalone deriving using :ghc-flag:`-XDeriveAnyClass` on
+  any data type, even if its data constructors are not in scope. This is
+  consistent with the fact that this code (in the presence of
+  :ghc-flag:`-XDeriveAnyClass`): ::
+
+      deriving instance C T
+
+  is exactly equivalent to: ::
+
+      instance C T
+
+  and the latter code has no restrictions about whether the data constructors
+  of ``T`` are in scope.
+
+- :ghc-flag:`-XGeneralizedNewtypeDeriving` now supports deriving type classes
+  with associated type families. See the section on
+  :ref:`GeneralizedNewtypeDeriving and associated type families
+  <gnd-and-associated-types>`.
+
+- :ghc-flag:`-XGeneralizedNewtypeDeriving` will no longer infer constraints
+  when deriving a class with no methods. That is, this code: ::
+
+      class Throws e
+      newtype Id a = MkId a
+        deriving Throws
+
+  will now generate this instance: ::
+
+      instance Throws (Id a)
+
+  instead of this instance: ::
+
+      instance Throws a => Throws (Id a)
+
+  This change was motivated by the fact that the latter code has a strictly
+  redundant ``Throws a`` constraint, so it would emit a warning when compiled
+  with :ghc-flag:`-Wredundant-constraints`. The latter instance could still
+  be derived if so desired using :ghc-flag:`-XStandaloneDeriving`: ::
+
+      deriving instance Throws a => Throws (Id a)
+
+- Add warning flag :ghc-flag:`-Wcpp-undef` which passes ``-Wundef`` to the C
+  pre-processor causing the pre-processor to warn on uses of the ``#if``
+  directive on undefined identifiers.
+
+- GHC will no longer automatically infer the kind of higher-rank type synonyms;
+  you must explicitly explicitly annotate the synonym with a kind signature.
+  For example, given::
+
+    data T :: (forall k. k -> Type) -> Type
+
+  to define a synonym of ``T``, you must write::
+
+    data TSyn = (T :: (forall k. k -> Type) -> Type)
+
 GHCi
 ~~~~
 
@@ -61,6 +116,8 @@ Template Haskell
 -  Splicing singleton unboxed tuple types (e.g., ``(# Int #)``) now works
    correctly. Previously, Template Haskell would implicitly remove the
    parentheses when splicing, which would turn ``(# Int #)`` into ``Int``.
+
+-  Add support for type signatures in patterns. (:ghc-ticket:`12164`)
 
 Runtime system
 ~~~~~~~~~~~~~~
@@ -159,7 +216,7 @@ filepath
 ghc
 ~~~
 
--  
+-
 ghc-boot
 ~~~~~~~~
 
