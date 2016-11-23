@@ -101,7 +101,7 @@ Verbosity options
 
 
 Warnings
-    ``-W`` ``-w`` ``-Wall`` ``-Wcompat`` ``-Werror`` ``-Wwarn`` ``-Wunrecognised-warning-flags`` ``-fshow-warning-groups`` ``-fdefer-type-errors`` ``-fdefer-typed-holes`` ``-fdefer-out-of-scope-variables`` ``-fhelpful-errors`` ``-Wdeprecated-flags`` ``-Wduplicate-constraints`` ``-Wduplicate-exports`` ``-Whi-shadowing`` ``-Widentities`` ``-Wimplicit-prelude`` ``-Wincomplete-patterns`` ``-Wincomplete-uni-patterns`` ``-Wmax-pmcheck-iterations=<N>`` ``-Wincomplete-record-updates`` ``-Wmissing-fields`` ``-Wmissing-import-lists`` ``-Wmissing-methods`` ``-Wmissing-signatures`` ``-Wmissing-exported-sigs`` ``-Wmissing-exported-signatures`` ``-Wmissing-local-sigs`` ``-Wmissing-local-signatures`` ``-Wmissing-monadfail-instances`` ``-Wsemigroup`` ``-Wmissed-specialisations`` ``-Wall-missed-specialisations`` ``-Wmonomorphism-restriction`` ``-Wname-shadowing`` ``-Wnoncanonical-monad-instances`` ``-Wnoncanonical-monadfail-instances`` ``-Wnoncanonical-monoid-instances`` ``-Worphans`` ``-Woverlapping-patterns`` ``-Wtabs`` ``-Wtype-defaults`` ``-Wunrecognised-pragmas`` ``-Wunticked-promoted-constructors`` ``-Wunused-binds`` ``-Wunused-top-binds`` ``-Wunused-local-binds`` ``-Wunused-pattern-binds`` ``-Wunused-imports`` ``-Wunused-matches`` ``-Wunused-foralls`` ``-Wunused-type-variables`` ``-Wunused-do-bind`` ``-Wwrong-do-bind`` ``-Wunsafe`` ``-Wsafe`` ``-Wtrustworthy-safe`` ``-Wwarnings-deprecations`` ``-Wamp`` ``-Wredundant-constraints`` ``-Wdeferred-type-errors`` ``-Wtyped-holes`` ``-Wdeferred-out-of-scope-variables`` ``-Wpartial-type-signatures`` ``-Wderiving-typeable``
+    ``-W`` ``-w`` ``-Wall`` ``-Wcompat`` ``-Werror`` ``-Werror=<wflag>`` ``-Wwarn`` ``-Wwarn=<wflag>`` ``-Wunrecognised-warning-flags`` ``-fshow-warning-groups`` ``-fdefer-type-errors`` ``-fdefer-typed-holes`` ``-fdefer-out-of-scope-variables`` ``-fhelpful-errors`` ``-Wdeprecated-flags`` ``-Wduplicate-constraints`` ``-Wduplicate-exports`` ``-Whi-shadowing`` ``-Widentities`` ``-Wimplicit-prelude`` ``-Wincomplete-patterns`` ``-Wincomplete-uni-patterns`` ``-Wmax-pmcheck-iterations=<N>`` ``-Wincomplete-record-updates`` ``-Wmissing-fields`` ``-Wmissing-import-lists`` ``-Wmissing-methods`` ``-Wmissing-signatures`` ``-Wmissing-exported-sigs`` ``-Wmissing-exported-signatures`` ``-Wmissing-local-sigs`` ``-Wmissing-local-signatures`` ``-Wmissing-monadfail-instances`` ``-Wsemigroup`` ``-Wmissed-specialisations`` ``-Wall-missed-specialisations`` ``-Wmonomorphism-restriction`` ``-Wname-shadowing`` ``-Wnoncanonical-monad-instances`` ``-Wnoncanonical-monadfail-instances`` ``-Wnoncanonical-monoid-instances`` ``-Worphans`` ``-Woverlapping-patterns`` ``-Wtabs`` ``-Wtype-defaults`` ``-Wunrecognised-pragmas`` ``-Wunticked-promoted-constructors`` ``-Wunused-binds`` ``-Wunused-top-binds`` ``-Wunused-local-binds`` ``-Wunused-pattern-binds`` ``-Wunused-imports`` ``-Wunused-matches`` ``-Wunused-foralls`` ``-Wunused-type-variables`` ``-Wunused-do-bind`` ``-Wwrong-do-bind`` ``-Wunsafe`` ``-Wsafe`` ``-Wtrustworthy-safe`` ``-Wwarnings-deprecations`` ``-Wamp`` ``-Wredundant-constraints`` ``-Wdeferred-type-errors`` ``-Wtyped-holes`` ``-Wdeferred-out-of-scope-variables`` ``-Wpartial-type-signatures`` ``-Wderiving-typeable``
 
 
 Code generation
@@ -1442,8 +1442,14 @@ Warnings
 ``-Werror``
     make warnings fatal
 
+``-Werror=<wflag>``
+    make a specific warning fatal
+
 ``-Wwarn``
     make warnings non-fatal
+
+``-Wwarn=<wflag>``
+    make a specific warning non-fatal
 
 ``-Wunrecognised-warning-flags``
     throw a warning when an unreconised ``-W...`` flag is encountered on the command line.
