@@ -617,6 +617,11 @@ See also the ``--help``, ``--version``, ``--numeric-version``, and
     list of some in the instances it knows about. With this flag it
     prints *all* the instances it knows about.
 
+.. ghc-flag:: -fhide-source-paths
+
+    Starting with minimal verbosity (see :ghc-flag:`-v1`), GHC displays the
+    name, the source path and the target path of each compiled module. This flag
+    can be used to reduce GHC's output by hiding source paths and target paths.
 
 The following flags control the way in which GHC displays types in error
 messages and in GHCi:
@@ -785,6 +790,15 @@ messages and in GHCi:
                        Binds: a = "hello"}
                   in a’
         or by using the flag -fno-warn-unused-do-bind
+
+.. ghc-flag:: -fdiagnostics-color=(always|auto|never)
+
+    Causes GHC to display error messages with colors.  To do this, the
+    terminal must have support for ANSI color codes, or else garbled text will
+    appear.  The default value is `auto`, which means GHC will make an attempt
+    to detect whether terminal supports colors and choose accordingly.  (Note:
+    the detection mechanism is not yet implemented, so colors are off by
+    default on all platforms.)
 
 .. ghc-flag:: -ferror-spans
 
