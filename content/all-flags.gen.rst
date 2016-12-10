@@ -45,7 +45,7 @@ Modes of operation
 
 
 Individual optimizations 
-    ``-fcall-arity`` ``-fcase-merge`` ``-fcmm-elim-common-blocks`` ``-fcmm-sink`` ``-fcpr-anal`` ``-fcse`` ``-fdicts-cheap`` ``-fdicts-strict`` ``-fdmd-tx-dict-sel`` ``-fdo-eta-reduction`` ``-fdo-lambda-eta-expansion`` ``-feager-blackholing`` ``-fenable-rewrite-rules`` ``-fexcess-precision`` ``-fexpose-all-unfoldings`` ``-ffloat-in`` ``-ffull-laziness`` ``-ffun-to-thunk`` ``-fignore-asserts`` ``-fignore-interface-pragmas`` ``-flate-dmd-anal`` ``-fliberate-case`` ``-fliberate-case-threshold=⟨n⟩`` ``-floopification`` ``-fmax-inline-alloc-size=⟨n⟩`` ``-fmax-inline-memcpy-insns=⟨n⟩`` ``-fmax-inline-memset-insns=⟨n⟩`` ``-fmax-relevant-binds=⟨n⟩`` ``-fmax-uncovered-patterns=⟨n⟩`` ``-fmax-simplifier-iterations=⟨n⟩`` ``-fmax-worker-args=⟨n⟩`` ``-fno-opt-coercion`` ``-fno-pre-inlining`` ``-fno-state-hack`` ``-fomit-interface-pragmas`` ``-fomit-yields`` ``-foptimal-applicative-do`` ``-fpedantic-bottoms`` ``-fregs-graph`` ``-fregs-iterative`` ``-fsimplifier-phases=⟨n⟩`` ``-fsimpl-tick-factor=⟨n⟩`` ``-fspec-constr`` ``-fspec-constr-count=⟨n⟩`` ``-fspec-constr-threshold=⟨n⟩`` ``-fspecialise`` ``-fcross-module-specialise`` ``-fstatic-argument-transformation`` ``-fstrictness`` ``-fstrictness-before=⟨n⟩`` ``-funbox-small-strict-fields`` ``-funbox-strict-fields`` ``-funfolding-creation-threshold=⟨n⟩`` ``-funfolding-dict-discount=⟨n⟩`` ``-funfolding-fun-discount=⟨n⟩`` ``-funfolding-keeness-factor=⟨n⟩`` ``-funfolding-use-threshold=⟨n⟩`` ``-fvectorisation-avoidance`` ``-fvectorise`` ``-fworker-wrapper``
+    ``-fcall-arity`` ``-fcase-merge`` ``-fcase-folding`` ``-fcmm-elim-common-blocks`` ``-fcmm-sink`` ``-fcpr-anal`` ``-fcse`` ``-fdicts-cheap`` ``-fdicts-strict`` ``-fdmd-tx-dict-sel`` ``-fdo-eta-reduction`` ``-fdo-lambda-eta-expansion`` ``-feager-blackholing`` ``-fenable-rewrite-rules`` ``-fexcess-precision`` ``-fexpose-all-unfoldings`` ``-ffloat-in`` ``-ffull-laziness`` ``-ffun-to-thunk`` ``-fignore-asserts`` ``-fignore-interface-pragmas`` ``-flate-dmd-anal`` ``-fliberate-case`` ``-fliberate-case-threshold=⟨n⟩`` ``-floopification`` ``-fmax-inline-alloc-size=⟨n⟩`` ``-fmax-inline-memcpy-insns=⟨n⟩`` ``-fmax-inline-memset-insns=⟨n⟩`` ``-fmax-relevant-binds=⟨n⟩`` ``-fmax-uncovered-patterns=⟨n⟩`` ``-fmax-simplifier-iterations=⟨n⟩`` ``-fmax-worker-args=⟨n⟩`` ``-fno-opt-coercion`` ``-fno-pre-inlining`` ``-fno-state-hack`` ``-fomit-interface-pragmas`` ``-fomit-yields`` ``-foptimal-applicative-do`` ``-fpedantic-bottoms`` ``-fregs-graph`` ``-fregs-iterative`` ``-fsimplifier-phases=⟨n⟩`` ``-fsimpl-tick-factor=⟨n⟩`` ``-fspec-constr`` ``-fspec-constr-count=⟨n⟩`` ``-fspec-constr-threshold=⟨n⟩`` ``-fspecialise`` ``-fcross-module-specialise`` ``-fstatic-argument-transformation`` ``-fstrictness`` ``-fstrictness-before=⟨n⟩`` ``-funbox-small-strict-fields`` ``-funbox-strict-fields`` ``-funfolding-creation-threshold=⟨n⟩`` ``-funfolding-dict-discount=⟨n⟩`` ``-funfolding-fun-discount=⟨n⟩`` ``-funfolding-keeness-factor=⟨n⟩`` ``-funfolding-use-threshold=⟨n⟩`` ``-fvectorisation-avoidance`` ``-fvectorise`` ``-fworker-wrapper``
 
 
 Optimization levels
@@ -918,6 +918,9 @@ Individual optimizations
 
 ``-fcase-merge``
     Enable case-merging. Implied by :ghc-flag:`-O`.
+
+``-fcase-folding``
+    Enable constant folding in case expressions. Implied by :ghc-flag:`-O`.
 
 ``-fcmm-elim-common-blocks``
     Enable Cmm common block elimination. Implied by :ghc-flag:`-O`.
