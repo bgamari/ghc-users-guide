@@ -97,7 +97,7 @@ Temporary files
 
 
 Verbosity options
-    ``-v`` ``-v⟨n⟩`` ``-fhide-source-paths`` ``-fprint-potential-instances`` ``-fprint-explicit-foralls`` ``-fprint-explicit-kinds`` ``-fprint-explicit-runtime-reps`` ``-fprint-unicode-syntax`` ``-fprint-expanded-synonyms`` ``-fprint-typechecker-elaboration`` ``-fdiagnostics-color=(always|auto|never)`` ``-ferror-spans`` ``-Rghc-timing``
+    ``-v`` ``-v⟨n⟩`` ``-fhide-source-paths`` ``-fprint-potential-instances`` ``-fprint-explicit-foralls`` ``-fprint-explicit-kinds`` ``-fprint-explicit-runtime-reps`` ``-fprint-unicode-syntax`` ``-fprint-expanded-synonyms`` ``-fprint-typechecker-elaboration`` ``-fdiagnostics-color=(always|auto|never)`` ``-ferror-spans`` ``-Rghc-timing`` ``-fshow-hole-constraints``
 
 
 Warnings
@@ -1427,6 +1427,9 @@ Verbosity options
 
 ``-Rghc-timing``
     Summarise timing stats for GHC (same as ``+RTS -tstderr``).
+
+``-fshow-hole-constraints``
+    Show constraints when reporting typed holes
 
 
 Warnings
