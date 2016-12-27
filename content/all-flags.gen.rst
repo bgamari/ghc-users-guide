@@ -97,7 +97,7 @@ Temporary files
 
 
 Verbosity options
-    ``-v`` ``-v⟨n⟩`` ``-fhide-source-paths`` ``-fprint-potential-instances`` ``-fprint-explicit-foralls`` ``-fprint-explicit-kinds`` ``-fprint-explicit-runtime-reps`` ``-fprint-unicode-syntax`` ``-fprint-expanded-synonyms`` ``-fprint-typechecker-elaboration`` ``-fdiagnostics-color=(always|auto|never)`` ``-ferror-spans`` ``-Rghc-timing`` ``-fshow-hole-constraints``
+    ``-v`` ``-v⟨n⟩`` ``-fhide-source-paths`` ``-fprint-potential-instances`` ``-fprint-explicit-foralls`` ``-fprint-explicit-kinds`` ``-fprint-explicit-runtime-reps`` ``-fprint-unicode-syntax`` ``-fprint-expanded-synonyms`` ``-fprint-typechecker-elaboration`` ``-fdiagnostics-color=(always|auto|never)`` ``-f[no-]diagnostics-show-caret`` ``-ferror-spans`` ``-Rghc-timing`` ``-fshow-hole-constraints``
 
 
 Warnings
@@ -1422,6 +1422,9 @@ Verbosity options
 ``-fdiagnostics-color=(always|auto|never)``
     Use colors in error messages
 
+``-f[no-]diagnostics-show-caret``
+    Whether to show snippets of original source code
+
 ``-ferror-spans``
     Output full span in error messages
 
@@ -1632,7 +1635,7 @@ Warnings
     Report warnings when :ref:`typed hole <typed-holes>` errors are :ref:`deferred until runtime <defer-type-errors>`. See :ghc-flag:`-fdefer-typed-holes`.
 
 ``-Wdeferred-out-of-scope-variables``
-    Report warnings when variable out-of-scope errors are :ref:`deferred until runtime <defer-out-of-scope-variables>`. See :ghc-flag:`-fdefer-out-of-scope-variables`.
+    Report warnings when variable out-of-scope errors are :ref:`deferred until runtime. See :ghc-flag:`-fdefer-out-of-scope-variables`.
 
 ``-Wpartial-type-signatures``
     warn about holes in partial type signatures when :ghc-flag:`-XPartialTypeSignatures` is enabled. Not applicable when :ghc-flag:`-XPartialTypesignatures` is not enabled, in which case errors are generated for such holes. See :ref:`partial-type-signatures`.
