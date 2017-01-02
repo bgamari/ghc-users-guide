@@ -6,4 +6,4 @@ extlinks = {
     'ghc-wiki': ('http://ghc.haskell.org/trac/ghc/wiki/%s', 'Trac #'),
 }
 
-version = '8.1.20161228'
+version = '8.1.20170102'
