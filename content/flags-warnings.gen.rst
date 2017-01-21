@@ -169,4 +169,8 @@
 |                                                    | such declarations are unnecessary and are ignored by the compiler because GHC has a custom           |                                |                                                         |
 |                                                    | solver for discharging this type of constraint.                                                      |                                |                                                         |
 +----------------------------------------------------+------------------------------------------------------------------------------------------------------+--------------------------------+---------------------------------------------------------+
+| :ghc-flag:`-Wmissing-home-modules`                 | warn when encountering a home module imported, but not listed on the command line. Useful for        | dynamic                        | :ghc-flag:`-Wno-missing-home-modules`                   |
+|                                                    | cabal to ensure GHC won't pick up modules, not listed neither in ``exposed-modules``, nor in         |                                |                                                         |
+|                                                    | ``other-modules``.                                                                                   |                                |                                                         |
++----------------------------------------------------+------------------------------------------------------------------------------------------------------+--------------------------------+---------------------------------------------------------+
 
