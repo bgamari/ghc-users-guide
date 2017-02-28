@@ -45,9 +45,26 @@ Compiler
   syntax can be used, in addition to a new form for specifying the cost centre
   name. See :ref:`scc-pragma` for examples.
 
+- GHC is now much more particular about :ghc-flag:`-XDefaultSignatures`. The
+  type signature for a default method of a type class must now be the same as
+  the corresponding main method's type signature modulo differences in the
+  signatures' contexts. Otherwise, the typechecker will reject that class's
+  definition. See :ref:`class-default-signatures` for further details.
+
 - It is now possible to explicitly pick a strategy to use when deriving a
   class instance using the :ghc-flag:`-XDerivingStrategies` language extension
   (see :ref:`deriving-strategies`).
+
+- :ghc-flag:`-XDeriveAnyClass` is no longer limited to type classes whose
+  argument is of kind ``*`` or ``* -> *``.
+
+- The means by which :ghc-flag:`-XDeriveAnyClass` infers instance contexts has
+  been completely overhauled. The instance context is now inferred using the
+  type signatures (and default type signatures) of the derived class's methods
+  instead of using the datatype's definition, which often led to
+  overconstrained instances or instances that didn't typecheck (or worse,
+  triggered GHC panics). See the section on
+  :ref:`DeriveAnyClass <derive-any-class>` for more details.
 
 - GHC now allows standalone deriving using :ghc-flag:`-XDeriveAnyClass` on
   any data type, even if its data constructors are not in scope. This is
@@ -119,12 +136,36 @@ Compiler
   :ghc-flag:`-Wmissing-methods` will now warn that ``_Bar`` is not implemented
   in the ``Foo Int`` instance.
 
+- A new flag :ghc-flag:`-ddump-json` has been added. This flag dumps compiler
+  output as JSON documents. It is experimental and will be refined depending
+  on feedback from tooling authors for the next release.
+
+- GHC is now able to better optimize polymorphic expressions by using known
+  superclass dictionaries where possible. Some examples:
+
+    -- uses of `Monad IO` or `Applicative IO` here are improved
+    foo :: MonadBaseControl IO m => ...
+
+    -- uses of `Monoid MyMonoid` here are improved
+    bar :: MonadWriter MyMonoid m => ...
+
+- GHC now derives the definition of ``<$`` when using ``DeriveFunctor``
+  rather than using the default definition. This prevents unnecessary
+  allocation and a potential space leak when deriving ``Functor`` for
+  a recursive type.
+
+- The :ghc-flag:`-XExtendedDefaultRules` extension now defaults multi-parameter
+  typeclasses. See :ghc-ticket:`12923`.
+
 GHCi
 ~~~~
 
 -  TODO FIXME.
 
 - Added :ghc-flag:`-flocal-ghci-history` which uses current directory for `.ghci-history`.
+
+- Added support for :ghc-flag:`-XStaticPointers` in interpreted modules. Note, however,
+  that ``static`` expressions are still not allowed in expressions evaluated in the REPL.
 
 Template Haskell
 ~~~~~~~~~~~~~~~~
@@ -183,6 +224,9 @@ Template Haskell
    type variables ``a`` and ``k`` as implicitly quantified.
    (:ghc-ticket:`13018` and :ghc-ticket:`13123`)
 
+- Looking up type constructors with symbol names (e.g., ``+``) now works
+  as expected (:ghc-ticket:`11046`)
+
 
 Runtime system
 ~~~~~~~~~~~~~~
@@ -217,6 +261,13 @@ Runtime system
 - Added processor group support for Windows. This allows the runtime to allocate
   threads to all cores in systems which have multiple processor groups.
   (e.g. > 64 cores, see :ghc-ticket:`11054`)
+
+- Output of :ref:`Event log <rts-eventlog>` data can now be configured.
+  Enabling external tools to collect and analyze the event log data while the
+  application is still running.
+
+- advapi32, shell32 and user32 are now automatically loaded in GHCi. libGCC is also
+  loaded when a depencency requires it. See :ghc-ticket:`13189`.
 
 Build system
 ~~~~~~~~~~~~
@@ -265,6 +316,16 @@ See ``changelog.md`` in the ``base`` package for full release notes.
 - Add ``type family AppendSymbol (m :: Symbol) (n :: Symbol) :: Symbol`` to
   ``GHC.TypeLits``
 
+- Add ``GHC.TypeNats`` module with ``Natural``-based ``KnownNat``. The ``Nat``
+  operations in ``GHC.TypeLits`` are a thin compatibility layer on top.
+  Note: the ``KnownNat`` evidence is changed from an ``Integer`` to a ``Natural``.
+
+- ``liftA2`` is now a method of the ``Applicative`` class. ``Traversable``
+  deriving has been modified to use ``liftA2`` for the first two elements
+  traversed in each constructor. ``liftA2`` is not yet in the ``Prelude``,
+  and must currently be imported from ``Control.Applicative``. It is likely
+  to be added to the ``Prelude`` in the future.
+
 binary
 ~~~~~~
 
@@ -284,6 +345,16 @@ containers
 ~~~~~~~~~~
 
 -  Version number XXXXX (was 0.5.4.0)
+
+compact
+~~~~~~~
+
+The ``compact`` library provides an experimental API for placing immutable
+data structures into a contiguous memory region.  Data in these regions
+is not traced during garbage collection and can be serialized to disk or
+over the network.
+
+- Version number 1.0.0.0 (newly added)
 
 deepseq
 ~~~~~~~

@@ -46,9 +46,17 @@ Dumping out compiler intermediate structures
 
         Dump renamer output
 
+    .. ghc-flag:: -ddump-rn-ast
+
+        Dump renamer output as a syntax tree
+
     .. ghc-flag:: -ddump-tc
 
         Dump typechecker output
+
+    .. ghc-flag:: -ddump-tc-ast
+
+        Dump typechecker output as a syntax tree
 
     .. ghc-flag:: -ddump-splices
 
@@ -103,7 +111,9 @@ Dumping out compiler intermediate structures
 
     .. ghc-flag:: -ddump-inlinings
 
-        Dumps inlining info from the simplifier
+        Dumps inlining info from the simplifier. Note that if used in conjunction with
+        :ghc-flag:`-dverbose-core2core` the compiler will also dump the inlinings that
+        it considers but passes up, along with its rationale.
 
     .. ghc-flag:: -ddump-stranal
 
@@ -169,6 +179,12 @@ Dumping out compiler intermediate structures
     .. ghc-flag:: -ddump-foreign
 
         dump foreign export stubs
+
+    .. ghc-flag:: -ddump-json
+
+         Dump error messages as JSON documents. This is intended to be consumed
+         by external tooling. A good way to use it is in conjunction with
+         :ghc-flag:`-ddump-to-file`.
 
 .. ghc-flag:: -ddump-simpl-iterations
 
@@ -251,10 +267,6 @@ Dumping out compiler intermediate structures
     aren't). This flag makes debugging output appear in the more verbose
     debug style.
 
-.. ghc-flag:: -dppr-ticks
-
-    Includes "ticks" in the pretty-printer output.
-
 
 .. _formatting dumps:
 
@@ -306,6 +318,10 @@ parts that you are not interested in.
     Suppress everything that can be suppressed, except for unique ids as
     this often makes the printout ambiguous. If you just want to see the
     overall structure of the code, then start here.
+
+.. ghc-flag:: -dsuppress-ticks
+
+    Suppress "ticks" in the pretty-printer output.
 
 .. ghc-flag:: -dsuppress-uniques
 

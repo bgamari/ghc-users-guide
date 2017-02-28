@@ -146,7 +146,7 @@ specifies their runtime representation. For example, the type ``Int#`` has
 kind ``TYPE 'IntRep`` and ``Double#`` has kind ``TYPE 'DoubleRep``. These
 kinds say that the runtime representation of an ``Int#`` is a machine integer,
 and the runtime representation of a ``Double#`` is a machine double-precision
-floating point. In constrast, the kind ``*`` is actually just a synonym
+floating point. In contrast, the kind ``*`` is actually just a synonym
 for ``TYPE 'PtrRepLifted``. More details of the ``TYPE`` mechanisms appear in
 the `section on runtime representation polymorphism <#runtime-rep>`__.
 
@@ -4185,29 +4185,71 @@ Note the following details
   class on a newtype, and :ghc-flag:`-XGeneralizedNewtypeDeriving` is also on,
   :ghc-flag:`-XDeriveAnyClass` takes precedence.
 
-- :ghc-flag:`-XDeriveAnyClass` is allowed only when the last argument of the class
-  has kind ``*`` or ``(* -> *)``.  So this is not allowed: ::
+- The instance context is determined by the type signatures of the derived
+  class's methods. For instance, if the class is: ::
 
-    data T a b = MkT a b deriving( Bifunctor )
+    class Foo a where
+      bar :: a -> String
+      default bar :: Show a => a -> String
+      bar = show
 
-  because the last argument of ``Bifunctor :: (* -> * -> *) -> Constraint``
-  has the wrong kind.
+      baz :: a -> a -> Bool
+      default baz :: Ord a => a -> a -> Bool
+      baz x y = compare x y == EQ
 
-- The instance context will be generated according to the same rules
-  used when deriving ``Eq`` (if the kind of the type is ``*``), or
-  the rules for ``Functor`` (if the kind of the type is ``(* -> *)``).
-  For example ::
+  And you attempt to derive it using :ghc-flag:`-XDeriveAnyClass`: ::
 
-    instance C a => C (a,b) where ...
+    instance Eq   a => Eq   (Option a) where ...
+    instance Ord  a => Ord  (Option a) where ...
+    instance Show a => Show (Option a) where ...
 
-    data T a b = MkT a (a,b) deriving( C )
+    data Option a = None | Some a deriving Foo
 
-  The ``deriving`` clause will generate ::
+  Then the derived ``Foo`` instance will be: ::
 
-    instance C a => C (T a b) where {}
+    instance (Show a, Ord a) => Foo (Option a)
 
-  The constraints `C a` and `C (a,b)` are generated from the data
-  constructor arguments, but the latter simplifies to `C a`.
+  Since the default type signatures for ``bar`` and ``baz`` require ``Show a``
+  and ``Ord a`` constraints, respectively.
+
+  Constraints on the non-default type signatures can play a role in inferring
+  the instance context as well. For example, if you have this class: ::
+
+    class HigherEq f where
+      (==#) :: f a -> f a -> Bool
+      default (==#) :: Eq (f a) => f a -> f a -> Bool
+      x ==# y = (x == y)
+
+  And you tried to derive an instance for it: ::
+
+    instance Eq a => Eq (Option a) where ...
+    data Option a = None | Some a deriving HigherEq
+
+  Then it will fail with an error to the effect of: ::
+
+    No instance for (Eq a)
+        arising from the 'deriving' clause of a data type declaration
+
+  That is because we require an ``Eq (Option a)`` instance from the default
+  type signature for ``(==#)``, which in turn requires an ``Eq a`` instance,
+  which we don't have in scope. But if you tweak the definition of
+  ``HigherEq`` slightly: ::
+
+    class HigherEq f where
+      (==#) :: Eq a => f a -> f a -> Bool
+      default (==#) :: Eq (f a) => f a -> f a -> Bool
+      x ==# y = (x == y)
+
+  Then it becomes possible to derive a ``HigherEq Option`` instance. Note that
+  the only difference is that now the non-default type signature for ``(==#)``
+  brings in an ``Eq a`` constraint. Constraints from non-default type
+  signatures never appear in the derived instance context itself, but they can
+  be used to discharge obligations that are demanded by the default type
+  signatures. In the example above, the default type signature demanded an
+  ``Eq a`` instance, and the non-default signature was able to satisfy that
+  request, so the derived instance is simply: ::
+
+    instance HigherEq Option
 
 - :ghc-flag:`-XDeriveAnyClass` can be used with partially applied classes,
   such as ::
@@ -4511,6 +4553,10 @@ allowed. For unidirectional and explicitly bidirectional pattern
 synonyms, there is no restriction on the right-hand side pattern.
 
 Pattern synonyms cannot be defined recursively.
+
+:ref:`complete-pragma` can be specified in order to tell
+the pattern match exhaustiveness checker that a set of pattern synonyms is
+complete.
 
 .. _patsyn-impexp:
 
@@ -4887,6 +4933,59 @@ the original type ``[a]`` of ``enum`` still applies. When giving an
 empty instance, however, the default implementation ``map to genum`` is
 filled-in, and type-checked with the type
 ``(Generic a, GEnum (Rep a)) => [a]``.
+
+The type signature for a default method of a type class must take on the same
+form as the corresponding main method's type signature. Otherwise, the
+typechecker will reject that class's definition. By "take on the same form", we
+mean that the default type signature should differ from the main type signature
+only in their contexts. Therefore, if you have a method ``bar``: ::
+
+      class Foo a where
+        bar :: forall b. C => a -> b -> b
+
+Then a default method for ``bar`` must take on the form: ::
+
+      default bar :: forall b. C' => a -> b -> b
+
+``C`` is allowed to be different from ``C'``, but the right-hand sides of the
+type signatures must coincide. We require this because when you declare an
+empty instance for a class that uses :ghc-flag:`-XDefaultSignatures`, GHC
+implicitly fills in the default implementation like this: ::
+
+      instance Foo Int where
+        bar = default_bar @Int
+
+Where ``@Int`` utilizes visible type application
+(:ref:`visible-type-application`) to instantiate the ``b`` in
+``default bar :: forall b. C' => a -> b -> b``. In order for this type
+application to work, the default type signature for ``bar`` must have the same
+type variable order as the non-default signature! But there is no obligation
+for ``C`` and ``C'`` to be the same (see, for instance, the ``Enum`` example
+above, which relies on this).
+
+To further explain this example, the right-hand side of the default
+type signature for ``bar`` must be something that is alpha-equivalent to
+``forall b. a -> b -> b`` (where ``a`` is bound by the class itself, and is
+thus free in the methods' type signatures). So this would also be an acceptable
+default type signature: ::
+
+      default bar :: forall x. C' => a -> x -> x
+
+But not this (since the free variable ``a`` is in the wrong place): ::
+
+      default bar :: forall b. C' => b -> a -> b
+
+Nor this, since we can't match the type variable ``b`` with the concrete type
+``Int``: ::
+
+      default bar :: C' => a -> Int -> Int
+
+That last one deserves a special mention, however, since ``a -> Int -> Int`` is
+a straightforward instantiation of ``forall b. a -> b -> b``. You can still
+write such a default type signature, but you now must use type equalities to
+do so: ::
+
+      default bar :: forall b. (C', b ~ Int) => a -> b -> b
 
 We use default signatures to simplify generic programming in GHC
 (:ref:`generic-programming`).
@@ -6820,7 +6919,7 @@ completely covers the cases covered by the instance head.
 
 -  A historical note.  In the past (but no longer), GHC allowed you to
    write *multiple* type or data family instances for a single
-   asssociated type.  For example: ::
+   associated type.  For example: ::
 
        instance GMapKey Flob where
          data GMap Flob [v] = G1 v
@@ -8086,7 +8185,7 @@ slightly more general than the Haskell 98 version.
 Because the code generator must store and move arguments as well
 as variables, the logic above applies equally well to function arguments,
 which may not be levity-polymorphic.
-  
+
 
 Levity-polymorphic bottoms
 --------------------------
@@ -10558,7 +10657,7 @@ Using Template Haskell
 ----------------------
 
 -  The data types and monadic constructor functions for Template Haskell
-   are in the library ``Language.Haskell.THSyntax``.
+   are in the library ``Language.Haskell.TH.Syntax``.
 
 -  You can only run a function at compile time if it is imported from
    another module. That is, you can't define a function in a module, and
@@ -11927,6 +12026,13 @@ While the following definitions are rejected: ::
     ref8 (y :: a) = let x = undefined :: a
                      in static x      -- x has a non-closed type
 
+.. note::
+
+    While modules loaded in GHCi with the :ghci-cmd:`:load` command may use
+    :ghc-flag:`-XStaticPointers` and ``static`` expressions, statements
+    entered on the REPL may not. This is a limitation of GHCi; see
+    :ghc-ticket:`12356` for details.
+
 .. _typechecking-static-pointers:
 
 Static semantics of static pointers
@@ -12759,6 +12865,77 @@ The ``{-# SOURCE #-}`` pragma is used only in ``import`` declarations,
 to break a module loop. It is described in detail in
 :ref:`mutual-recursion`.
 
+.. _complete-pragma:
+
+``COMPLETE`` pragmas
+--------------------
+
+The ``COMPLETE`` pragma is used to inform the pattern match checker that a
+certain set of patterns is complete and that any function which matches
+on all the specified patterns is total.
+
+The most common usage of ``COMPLETE`` pragmas is with
+:ref:`pattern-synonyms`.
+On its own, the checker is very naive and assumes that any match involving
+a pattern synonym will fail. As a result, any pattern match on a
+pattern synonym is regarded as
+incomplete unless the user adds a catch-all case.
+
+For example, the data types ``2 * A`` and ``A + A`` are isomorphic but some
+computations are more naturally expressed in terms of one or the other. To
+get the best of both worlds, we can choose one as our implementation and then
+provide a set of pattern synonyms so that users can use the other representation
+if they desire. We can then specify a ``COMPLETE`` pragma in order to
+inform the pattern match checker that a function which matches on both ``LeftChoice``
+and ``RightChoice`` is total. ::
+
+    data Choice a = Choice Bool a
+
+    pattern LeftChoice :: a -> Choice a
+    pattern LeftChoice a = Choice False a
+
+    pattern RightChoice :: a -> Choice a
+    pattern RightChoice a = Choice True a
+
+    {-# COMPLETE LeftChoice, RightChoice #-}
+
+    foo :: Choice Int -> Int
+    foo (LeftChoice n) = n * 2
+    foo (RightChoice n) = n - 2
+
+``COMPLETE`` pragmas are only used by the pattern match checker. If a function
+definition matches on all the constructors specified in the pragma then the
+compiler will produce no warning.
+
+``COMPLETE`` pragmas can contain any data constructors or pattern synonyms
+which are in scope. Once defined, they are automatically imported and exported
+from modules. ``COMPLETE`` pragmas should be thought of as asserting a universal
+truth about a set of patterns and as a result, should not be used to silence
+context specific incomplete match warnings.
+
+When specifing a ``COMPLETE`` pragma, the result types of all patterns must
+be consistent with each other. This is a sanity check as it would be impossible
+to match on all the patterns if the types were inconsistent.
+
+The result type must also be unambiguous. Usually this can be inferred but
+when all the pattern synonyms in a group are polymorphic in the constructor
+the user must provide a type signature. ::
+
+    class LL f where
+      go :: f a -> ()
+
+    instance LL [] where
+      go _ = ()
+
+    pattern T :: LL f => f a
+    pattern T <- (go -> ())
+
+    {-# COMPLETE T :: [] #-}
+
+    -- No warning
+    foo :: [a] -> Int
+    foo T = 5
+
 .. _overlap-pragma:
 
 ``OVERLAPPING``, ``OVERLAPPABLE``, ``OVERLAPS``, and ``INCOHERENT`` pragmas
@@ -13205,7 +13382,7 @@ Controlling what's going on in rewrite rules
    great detail what rules are being fired. If you add :ghc-flag:`-dppr-debug`
    you get a still more detailed listing.
 
--  The definition of (say) ``build`` in ``GHC/Base.lhs`` looks like
+-  The definition of (say) ``build`` in ``GHC/Base.hs`` looks like
    this: ::
 
                build   :: forall a. (forall b. (a -> b -> b) -> b -> b) -> [a]
@@ -13218,10 +13395,10 @@ Controlling what's going on in rewrite rules
    any inlining happening in the RHS of the ``INLINE`` thing. I regret
    the delicacy of this.
 
--  In ``libraries/base/GHC/Base.lhs`` look at the rules for ``map`` to
+-  In ``libraries/base/GHC/Base.hs`` look at the rules for ``map`` to
    see how to write rules that will do fusion and yet give an efficient
    program even if fusion doesn't happen. More rules in
-   ``GHC/List.lhs``.
+   ``GHC/List.hs``.
 
 .. _special-ids:
 
