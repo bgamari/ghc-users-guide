@@ -5,13 +5,20 @@ Since the 7.10 release GHC can emit a debugging information to help debugging
 tools understand the code that GHC produces. This debugging information is
 useable by most UNIX debugging tools.
 
-.. warning::
+.. ghc-flag:: -g
+              -g⟨n⟩
+    :shortdesc: Produce DWARF debug information in compiled object files.
+        ⟨n⟩ can be 0, 1, or 2, with higher numbers producing richer
+        output. If ⟨n⟩ is omitted level 2 is assumed.
+    :type: dynamic
+    :category: debugging
 
-   This feature is still in technology preview state. There are known cases
-   where requesting a stack-trace can cause your program to segmentation fault
-   (e.g. :ghc-ticket:`11353`, :ghc-ticket:`11338`, and :ghc-ticket:`11337`).
-   Consequently, we can not recommend that stack trace support be used in
-   production code.
+    :since: 7.10, numeric levels since 8.0
+
+    Emit debug information in object code. Currently only DWARF debug
+    information is supported on x86-64 and i386. Currently debug levels 0
+    through 3 are accepted, with 0 disabling debug information production.
+    Levels 1 through 3 are functionally equivalent.
 
 
 Tutorial
@@ -175,19 +182,24 @@ will be of little use unless debug information is available in the executable
 and its dependent libraries.
 
 Stack trace functionality is exposed for use by Haskell programs in the
-:base-ref:`GHC.ExecutionStack <GHC-ExecutionStack.html>` module. See the Haddock
+:base-ref:`GHC.ExecutionStack.` module. See the Haddock
 documentation in this module for details regarding usage.
 
-Requesting a stack trace with ``SIGUSR2``
+.. _backtrace-signal:
+
+Requesting a stack trace with ``SIGQUIT``
 -----------------------------------------
 
 On POSIX-compatible platforms GHC's runtime system (when built with ``libdw``
-support) will produce a stack trace on ``stderr`` when a ``SIGUSR2`` signal is
-received. For instance (using the same ``fib.hs`` as above),
+support) will produce a stack trace on ``stderr`` when a ``SIGQUIT`` signal is
+received (on many systems this signal can be sent using :kbd:`Ctrl-\\`). For
+instance (using the same ``fib.hs`` as above),
 
 .. code-block:: sh
 
-    $ ./fib  &  killall -SIGUSR2 fib
+    $ ./fib  &  killall -SIGQUIT fib
+
+    Caught SIGQUIT; Backtrace:
     0x7f3176b15dd8    dwfl_thread_getframes (/usr/lib/x86_64-linux-gnu/libdw-0.163.so)
     0x7f3176b1582f    (null) (/usr/lib/x86_64-linux-gnu/libdw-0.163.so)
     0x7f3176b15b57    dwfl_getthreads (/usr/lib/x86_64-linux-gnu/libdw-0.163.so)
@@ -290,19 +302,19 @@ changes outside the span are guaranteed not to affect the code in the block.
 
 Spans are described with the following attributes,
 
-``DW_AT_ghc_span_file`` (0x2b10, string)
+``DW_AT_ghc_span_file`` (0x2b00, string)
   the name of the source file
 
-``DW_AT_ghc_span_start_line`` (0x2b11, integer)
+``DW_AT_ghc_span_start_line`` (0x2b01, integer)
   the line number of the beginning of the span
 
-``DW_AT_ghc_span_start_col`` (0x2b11, integer)
+``DW_AT_ghc_span_start_col`` (0x2b02, integer)
   the column number of the beginning of the span
 
-``DW_AT_ghc_span_end_line`` (0x2b11, integer)
+``DW_AT_ghc_span_end_line`` (0x2b03, integer)
   the line number of the end of the span
 
-``DW_AT_ghc_span_end_col`` (0x2b11, integer)
+``DW_AT_ghc_span_end_col`` (0x2b04, integer)
   the column number of the end of the span
 
 
