@@ -74,6 +74,7 @@ The following flags are simple ways to select standard "packages" of warnings:
         * :ghc-flag:`-Wimplicit-prelude`
         * :ghc-flag:`-Wmissing-local-signatures`
         * :ghc-flag:`-Wmissing-exported-signatures`
+        * :ghc-flag:`-Wmissing-export-lists`
         * :ghc-flag:`-Wmissing-import-lists`
         * :ghc-flag:`-Wmissing-home-modules`
         * :ghc-flag:`-Widentities`
@@ -238,7 +239,7 @@ of ``-W(no-)*``.
     :reverse: -fno-defer-type-errors
     :category:
 
-    :implies: :ghc-flag:`-fdefer-typed-holes`
+    :implies: :ghc-flag:`-fdefer-typed-holes`, :ghc-flag:`-fdefer-out-of-scope-variables`
 
     Defer as many type errors as possible until runtime. At compile time
     you get a warning (instead of an error). At runtime, if you use a
@@ -579,10 +580,10 @@ of ``-W(no-)*``.
 
         foreign import "&f" f :: FunPtr t
 
-    The first form declares that \`f\` is a (pure) C function that takes
-    no arguments and returns a pointer to a C function with type \`t\`,
-    whereas the second form declares that \`f\` itself is a C function
-    with type \`t\`. The first declaration is usually a mistake, and one
+    The first form declares that ``f`` is a (pure) C function that takes
+    no arguments and returns a pointer to a C function with type ``t``,
+    whereas the second form declares that ``f`` itself is a C function
+    with type ``t``. The first declaration is usually a mistake, and one
     that is hard to debug because it results in a crash, hence this
     warning.
 
@@ -684,8 +685,8 @@ of ``-W(no-)*``.
     Similar warnings are given for a redundant constraint in an instance
     declaration.
 
-    This option is on by default. As usual you can suppress it on a
-    per-module basis with :ghc-flag:`-Wno-redundant-constraints <-Wredundant-constraints>`.
+    When turning on, you can suppress it on a per-module basis with 
+    :ghc-flag:`-Wno-redundant-constraints <-Wredundant-constraints>`.
     Occasionally you may specifically want a function to have a more
     constrained signature than necessary, perhaps to leave yourself
     wiggle-room for changing the implementation without changing the
@@ -858,6 +859,31 @@ of ``-W(no-)*``.
     fields are initialised with bottoms), it is often an indication of a
     programmer error.
 
+.. ghc-flag:: -Wmissing-export-lists
+    :shortdesc: warn when a module declaration does not explicitly list all
+        exports
+    :type: dynamic
+    :reverse: -fnowarn-missing-export-lists
+    :category:
+
+    :since: 8.4.1
+
+    .. index::
+       single: missing export lists, warning
+       single: export lists, missing
+
+    This flag warns if you declare a module without declaring an explicit
+    export list. For example ::
+
+        module M where
+
+          p x = x
+
+    The :ghc-flag:`-Wmissing-export-lists` flag will warn that ``M`` does not
+    declare an export list. Declaring an explicit export list for ``M`` enables
+    GHC dead code analysis, prevents accidental export of names and can ease
+    optimizations like inlining.
+
 .. ghc-flag:: -Wmissing-import-lists
     :shortdesc: warn when an import declaration does not explicitly list all the
         names brought into scope
@@ -898,18 +924,6 @@ of ``-W(no-)*``.
     This option is on by default, and warns you whenever an instance
     declaration is missing one or more methods, and the corresponding
     class declaration has no default declaration for them.
-
-    The warning is suppressed if the method name begins with an
-    underscore. Here's an example where this is useful: ::
-
-        class C a where
-            _simpleFn :: a -> String
-            complexFn :: a -> a -> String
-            complexFn x y = ... _simpleFn ...
-
-    The idea is that: (a) users of the class will only call
-    ``complexFn``; never ``_simpleFn``; and (b) instance declarations
-    can define either ``complexFn`` or ``_simpleFn``.
 
     The ``MINIMAL`` pragma can be used to change which combination of
     methods will be required for instances of a particular class. See
@@ -1466,17 +1480,17 @@ of ``-W(no-)*``.
     ``other-modules``.
 
 .. ghc-flag:: -Wpartial-fields
-    :shortdesc: warn when define partial record field.
+    :shortdesc: warn when defining a partial record field.
     :type: dynamic
     :reverse: -Wno-partial-fields
     :category:
 
     :since: 8.4
 
-    The option :ghc-flag:`-Wpartial-fields` warns about record field that could
-    fail when it is used as a function. The function ``f`` below will fail when
-    applied to Bar, so the compiler will emit a warning about this when
-    :ghc-flag:`-Wpartial-fields` is enabled.
+    The option :ghc-flag:`-Wpartial-fields` warns about record fields that could
+    fail when accessed via a lacking constructor. The function ``f`` below will
+    fail when applied to ``Bar``, so the compiler will emit a warning at its
+    definition when :ghc-flag:`-Wpartial-fields` is enabled.
 
     The warning is suppressed if the field name begins with an underscore. ::
 

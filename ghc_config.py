@@ -9,10 +9,12 @@ lib_versions = {
     'ghc-prim': '0.5.2.0',
     'template-haskell': '@LIBRARY_template_haskell_VERSION@',
     'ghc-compact': '0.1.0.0',
-    'ghc': '8.3.20171025',
+    'ghc': '8.5.20180326',
     'parallel': '@LIBRARY_parallel_VERSION@',
-    'Cabal': '2.0.0.2',
+    'Cabal': '2.3.0.0',
     'array': '@LIBRARY_array_VERSION@',
 }
 
-version = '8.3.20171025'
+version = '8.5.20180326'
+
+llvm_version = '5.0'
